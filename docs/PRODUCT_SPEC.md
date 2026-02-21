@@ -1,19 +1,20 @@
 ﻿# Product Spec: MedhaTile
 
 ## Vision
-A minimal cognitive training web app that improves memory and focus through tile pattern recall.
+A minimal cognitive training web app for memory and focus using timed tile recall.
 
-## Primary User Loop
-1. User opens app and taps Start Training.
-2. App reveals a tile pattern for 3 seconds.
-3. User recalls and taps matching tiles.
-4. Correct selections continue; wrong selections add mistakes.
-5. 3 mistakes ends run.
-6. Successful round increases difficulty.
+## Game Flow
+1. User selects a difficulty mode and taps Start Training.
+2. App reveals a pattern in blue tiles for 3 seconds.
+3. User recalls and taps tiles.
+4. Correct taps are tracked; wrong taps increase mistakes.
+5. At 3 mistakes, app enters a review phase showing the full answer.
+6. User taps Next to open game over modal and restart.
+7. If user completes a round before 3 mistakes, the next round increases tile count.
 
 ## Phases
 ```ts
-type Phase = "idle" | "reveal" | "recall" | "gameover";
+type Phase = "idle" | "reveal" | "recall" | "review" | "gameover";
 ```
 
 ## Core State
@@ -21,6 +22,7 @@ type Phase = "idle" | "reveal" | "recall" | "gameover";
 type GameState = {
   level: number;
   gridSize: number;
+  tilesToRemember: number;
   pattern: number[];
   userSelections: number[];
   mistakes: number;
@@ -29,17 +31,23 @@ type GameState = {
 };
 ```
 
+## Difficulty Modes
+- Easy: `grid=4`, `startTiles=3`, `maxTiles=10`
+- Medium: `grid=6`, `startTiles=4`, `maxTiles=14`
+- Hard: `grid=8`, `startTiles=5`, `maxTiles=20`
+
 ## Visual Rules
-- Background: #F8F9FA (or subtle neutral gradient)
+- Background: neutral gradient around `#F8F9FA`
 - Default tile: light gray
 - Reveal tile: blue
-- Correct tile: green
-- Wrong tile: red
-- Rounded corners
-- Minimal animation
+- Clicked correct: blue with `OK`
+- Missed correct (review): violet with `.`
+- Wrong click: red with `X`
+- Rounded corners and minimal motion
 
 ## Success Criteria
-- Game loop runs without phase bugs.
-- Difficulty feels progressive.
-- Mobile layout is usable.
-- Replay value is good.
+- Reveal remains visible for full 3 seconds.
+- Round transitions are stable and no stale timer leaks.
+- Mobile layout is usable without clipped core controls.
+- Best score survives page reload.
+

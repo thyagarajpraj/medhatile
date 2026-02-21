@@ -1,36 +1,45 @@
 ﻿# Implementation Steps
 
-1. Backend setup
-- Initialize Express + TypeScript app in `backend/`.
-- Add CORS and JSON middleware.
-- Implement `/api/health`, `/api/levels`, `/api/pattern`.
-- Add scripts: `dev`, `build`, `start`.
+1. Environment setup
+- Run `npm run setup` from repo root.
+- Create local env files from examples for frontend and backend.
 
-2. Frontend setup
-- Initialize React + Vite + TypeScript + Tailwind in `frontend/`.
-- Build components: `Header`, `Grid`, `Tile`, `GameOverModal`.
-- Define shared types in `frontend/src/types/game.ts`.
+2. Backend readiness
+- Start backend: `npm run dev:backend`.
+- Confirm:
+  - `GET /api/health`
+  - `GET /api/levels`
+  - `GET /api/pattern?gridSize=<int>&count=<int>`
 
-3. Game engine
-- Implement state machine (`idle`, `reveal`, `recall`, `gameover`).
-- Reveal timer: 3000ms.
-- Mistake limit: 3.
-- Level advancement on successful recall.
+3. Frontend readiness
+- Start frontend: `npm run dev:frontend`.
+- Verify app boot and API base URL (`VITE_API_BASE_URL`).
 
-4. Data integration
-- Fetch levels from backend on app load.
-- Fetch pattern per round from backend.
-- Add frontend fallback local generator if API fails.
+4. Game engine behavior
+- Ensure phase flow: `idle -> reveal -> recall -> review -> gameover`.
+- Reveal duration must be exactly 3000ms.
+- Mistake limit must remain 3.
+- On round success, increment score and start next level in same selected mode.
 
-5. Persistence
-- Store and load best score from localStorage key:
-  - `medhatile_best_score`
+5. Feedback and review
+- Track wrong selections separately.
+- In review phase, show markers:
+  - `OK` clicked correct
+  - `.` missed correct
+  - `X` wrong click
+- Require user action (`Next`) before game over modal.
 
-6. Responsive polish
-- Ensure board fits mobile widths.
-- Keep text legible and controls tappable.
+6. Persistence
+- Read/write best score using `medhatile_best_score`.
 
 7. Validation
-- Run type checks and production builds for both apps.
-- Test full loop manually: start -> reveal -> recall -> game over -> restart.
+- Frontend tests: `cd frontend && npm run test`
+- Frontend build: `cd frontend && npm run build`
+- Backend build: `cd backend && npm run build`
+
+8. GitHub CI
+- Push branch and open PR.
+- Confirm `.github/workflows/ci.yml` passes:
+  - Frontend test/build
+  - Backend build
 

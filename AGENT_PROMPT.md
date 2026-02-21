@@ -1,18 +1,23 @@
 ﻿Build MedhaTile with separate frontend and backend.
 
-Requirements:
+Current requirements:
 - Frontend: React + Vite + TypeScript + Tailwind.
 - Backend: Express + TypeScript.
-- Phases: idle, reveal, recall, gameover.
+- Phases: idle, reveal, recall, review, gameover.
 - Reveal duration: 3 seconds.
 - Mistake limit: 3.
-- Best score in localStorage.
-- Difficulty progression exactly:
-  - 4x4 / 3
-  - 4x4 / 4
-  - 6x6 / 5
-  - 6x6 / 6
-  - 8x8 / 7
+- Best score in localStorage (`medhatile_best_score`).
+
+Difficulty modes:
+- Easy: grid 4, startTiles 3, maxTiles 10
+- Medium: grid 6, startTiles 4, maxTiles 14
+- Hard: grid 8, startTiles 5, maxTiles 20
+
+Review phase rules:
+- Show clicked correct as `OK`.
+- Show missed correct as `.`.
+- Show wrong click as `X`.
+- Require user click on `Next` before showing game over modal.
 
 Backend API:
 - GET /api/health
@@ -30,3 +35,4 @@ Process:
 - Follow docs/API_CONTRACT.md
 - Follow docs/IMPLEMENTATION_STEPS.md
 - Validate against docs/QA_CHECKLIST.md
+

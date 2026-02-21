@@ -1,27 +1,33 @@
 ﻿# QA Checklist
 
 ## Functional
-- Start button begins round.
-- Reveal phase lasts 3 seconds.
-- Only reveal tiles are blue during reveal phase.
-- Correct taps become green.
-- Wrong taps become red.
-- Third mistake triggers game over.
-- Round success increments score and advances difficulty.
+- Start screen shows mode selector and start button.
+- Reveal phase lasts 3 seconds and shows only pattern tiles in blue.
+- Recall accepts clicks only in recall phase.
+- Wrong clicks increase mistake count.
+- Third mistake switches phase to review.
+- Review shows answer states clearly:
+  - `OK` clicked correct
+  - `.` missed correct
+  - `X` wrong click
+- Review `Next` button moves to game over modal.
+- Restart returns to start screen.
 - Best score persists after reload.
 
 ## API
-- `/api/health` returns status ok.
-- `/api/levels` returns 5 configured levels.
-- `/api/pattern` returns unique indices and correct count.
-- Invalid `/api/pattern` inputs return HTTP 400.
+- `GET /api/health` returns `{ "status": "ok" }`.
+- `GET /api/levels` returns configured level list.
+- `GET /api/pattern` returns unique indices with requested count.
+- Invalid `gridSize` or `count` returns HTTP 400.
 
-## Build
-- `backend`: `npm run build` passes.
+## Test and Build
+- `frontend`: `npm run test` passes.
 - `frontend`: `npm run build` passes.
+- `backend`: `npm run build` passes.
 
 ## UX
-- Board and controls usable on mobile width.
-- Colors and states are clear.
-- No flashy visual effects.
+- Tiles and side panel do not overlap.
+- Tile board remains usable on mobile width.
+- No unexpected page scroll that hides primary controls.
+- Visual states are distinguishable (blue/violet/red markers).
 

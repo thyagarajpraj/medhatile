@@ -2,96 +2,85 @@
 
 Build your mind, one tile at a time.
 
-## Purpose
+## What It Is
 MedhaTile is a cognitive training game focused on:
 - Working memory
 - Focus
 - Pattern recall
 - Attention control
 
-This repository contains the full build documentation and execution steps for a split architecture (`frontend` + `backend`).
+This repo uses a split architecture (`frontend` + `backend`).
 
-## Scope
-Included:
+## Features
 - Start screen with best score
-- Timed reveal phase (3s)
-- Recall phase with correct/wrong tile feedback
-- 3-mistake fail rule
-- Level progression by difficulty table
+- Difficulty mode dropdown before starting:
+  - Easy: 4x4, starts at 3 tiles
+  - Medium: 6x6, starts at 4 tiles
+  - Hard: 8x8, starts at 5 tiles
+- Reveal phase for 3 seconds
+- Recall phase with mistakes tracking
+- Review phase showing:
+  - Clicked correct (`OK`)
+  - Missed correct (`.`)
+  - Wrong click (`X`)
+- 3 mistakes end the run
 - Game over modal with restart
-- localStorage best score
+- Best score persisted in localStorage (`medhatile_best_score`)
 
-Excluded:
-- Auth
-- Payments
-- Ads
-- Leaderboard
-- Database persistence
-- AI features
-- Streak system
-
-## Difficulty Table
-| Level | Grid | Tiles |
-|---|---|---|
-| 1 | 4x4 | 3 |
-| 2 | 4x4 | 4 |
-| 3 | 6x6 | 5 |
-| 4 | 6x6 | 6 |
-| 5 | 8x8 | 7 |
-
-## Target Stack
+## Stack
 - Frontend: React + Vite + TypeScript + Tailwind CSS
 - Backend: Node.js + Express + TypeScript
-- Deployment: Vercel (frontend), Render/Railway/Fly/VM (backend)
 
-## Target Structure
+## Project Structure
 ```txt
 medhatile/
-├── frontend/
-│   ├── src/
-│   └── .env.example
-├── backend/
-│   ├── src/
-│   └── .env.example
-├── docs/
-│   ├── PRODUCT_SPEC.md
-│   ├── API_CONTRACT.md
-│   ├── IMPLEMENTATION_STEPS.md
-│   └── QA_CHECKLIST.md
-├── AGENT_PROMPT.md
-└── README.md
+|-- .github/
+|   `-- workflows/
+|       `-- ci.yml
+|-- frontend/
+|   |-- src/
+|   `-- .env.example
+|-- backend/
+|   |-- src/
+|   `-- .env.example
+|-- docs/
+|   |-- PRODUCT_SPEC.md
+|   |-- API_CONTRACT.md
+|   |-- IMPLEMENTATION_STEPS.md
+|   `-- QA_CHECKLIST.md
+|-- AGENT_PROMPT.md
+`-- README.md
 ```
 
-## Execution Order
-1. Read `docs/PRODUCT_SPEC.md`.
-2. Implement backend API from `docs/API_CONTRACT.md`.
-3. Build frontend game engine and components.
-4. Wire frontend to backend.
-5. Run validation from `docs/QA_CHECKLIST.md`.
-
-## Quick Start (After FE/BE Apps Exist)
-1. Backend:
+## Setup
+1. Install frontend and backend dependencies:
 ```bash
-cd backend
-npm install
-copy .env.example .env
-npm run dev
+npm run setup
 ```
-2. Frontend:
+2. Create env files:
 ```bash
-cd frontend
-npm install
-copy .env.example .env
-npm run dev
+copy backend\.env.example backend\.env
+copy frontend\.env.example frontend\.env
+```
+3. Run backend:
+```bash
+npm run dev:backend
+```
+4. Run frontend (new terminal):
+```bash
+npm run dev:frontend
 ```
 
-## Notes
-- This root is cleaned to a split frontend/backend documentation baseline.
-- The implementation target is split frontend/backend, not Next.js API routes.
-- Use `AGENT_PROMPT.md` to hand off implementation to an AI coding agent.
+## Scripts
+From repo root:
+- `npm run setup`
+- `npm run dev:frontend`
+- `npm run dev:backend`
+- `npm run build`
 
 ## GitHub
-- CI workflow added at `.github/workflows/ci.yml`.
-- On every push and pull request:
-  - Frontend installs, runs tests, then builds.
-  - Backend installs and builds.
+- CI workflow: `.github/workflows/ci.yml`
+- Runs on every push and pull request:
+  - Frontend: install, test, build
+  - Backend: install, build
+

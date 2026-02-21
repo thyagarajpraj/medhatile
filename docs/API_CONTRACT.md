@@ -34,8 +34,13 @@ Response:
 ```
 
 Validation:
-- `gridSize` must be positive integer.
-- `count` must be positive integer.
+- `gridSize` must be a positive integer.
+- `count` must be a positive integer.
 - `count <= gridSize * gridSize`.
-- Return 400 for invalid input.
+- Return HTTP 400 on invalid input.
+
+Error response shape:
+```json
+{ "error": "Invalid gridSize or count" }
+```
 
