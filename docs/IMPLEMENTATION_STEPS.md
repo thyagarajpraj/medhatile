@@ -1,4 +1,4 @@
-﻿# Implementation Steps
+# Implementation Steps
 
 1. Environment setup
 - Run `npm run setup` from repo root.
@@ -7,16 +7,18 @@
 2. Backend readiness
 - Start backend: `npm run dev:backend`.
 - Confirm:
+  - `GET /health`
   - `GET /api/health`
-  - `GET /api/levels`
-  - `GET /api/pattern?gridSize=<int>&count=<int>`
+  - `GET /api/game/levels`
+  - `GET /api/game/pattern?gridSize=<int>&count=<int>`
+  - `POST /api/game/submit`
 
 3. Frontend readiness
 - Start frontend: `npm run dev:frontend`.
-- Verify app boot and API base URL (`VITE_API_BASE_URL`).
+- Verify app boot and API base URL (`VITE_API_URL`).
 
 4. Game engine behavior
-- Ensure phase flow: `idle -> reveal -> recall -> review -> gameover`.
+- Ensure phase flow: `idle -> reveal -> recall -> review`.
 - Reveal duration must be exactly 3000ms.
 - Mistake limit must remain 3.
 - On round success, increment score and start next level in same selected mode.
@@ -27,19 +29,21 @@
   - `OK` clicked correct
   - `.` missed correct
   - `X` wrong click
-- Require user action (`Next`) before game over modal.
+- After 3 mistakes, blink answer tiles for 1000ms and restart the same round automatically.
 
 6. Persistence
 - Read/write best score using `medhatile_best_score`.
 
-7. Validation
+7. Code documentation
+- Add JSDoc comments for all declared functions in `frontend/src` and `backend/src`.
+
+8. Validation
 - Frontend tests: `cd frontend && npm run test`
 - Frontend build: `cd frontend && npm run build`
 - Backend build: `cd backend && npm run build`
 
-8. GitHub CI
+9. GitHub CI
 - Push branch and open PR.
 - Confirm `.github/workflows/ci.yml` passes:
   - Frontend test/build
   - Backend build
-

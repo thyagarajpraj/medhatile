@@ -1,4 +1,7 @@
-﻿export function generatePattern(gridSize: number, count: number): number[] {
+/**
+ * Generates a unique random pattern of tile indexes for a square grid.
+ */
+export function generatePattern(gridSize: number, count: number): number[] {
   const total = gridSize * gridSize;
 
   if (gridSize <= 0 || count <= 0 || count > total) {

@@ -1,14 +1,20 @@
-﻿# API Contract
+# API Contract
 
-Base URL: `http://localhost:4000/api`
+Base URL: `http://localhost:5000`
 
 ## GET /health
+Response body:
+```txt
+OK
+```
+
+## GET /api/health
 Response:
 ```json
 { "status": "ok" }
 ```
 
-## GET /levels
+## GET /api/game/levels
 Response:
 ```json
 {
@@ -22,10 +28,19 @@ Response:
 }
 ```
 
-## GET /pattern
+## GET /api/game/config
+Response:
+```json
+{ "roundsPerLevel": 5 }
+```
+
+Validation:
+- `roundsPerLevel` is a positive integer controlled by backend env (`ROUNDS_PER_LEVEL`).
+
+## GET /api/game/pattern
 Request:
 ```txt
-/pattern?gridSize=4&count=3
+/api/game/pattern?gridSize=4&count=3
 ```
 
 Response:
@@ -44,3 +59,22 @@ Error response shape:
 { "error": "Invalid gridSize or count" }
 ```
 
+## POST /api/game/submit
+Request:
+```json
+{ "score": 7, "level": 8 }
+```
+
+Success response:
+```json
+{ "success": true, "message": "Score received" }
+```
+
+Validation:
+- `score` must be an integer >= 0.
+- `level` must be an integer > 0.
+
+Error response shape:
+```json
+{ "success": false, "message": "Invalid score payload" }
+```

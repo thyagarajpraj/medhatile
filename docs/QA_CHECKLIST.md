@@ -1,4 +1,4 @@
-﻿# QA Checklist
+# QA Checklist
 
 ## Functional
 - Start screen shows mode selector and start button.
@@ -10,14 +10,17 @@
   - `OK` clicked correct
   - `.` missed correct
   - `X` wrong click
-- Review `Next` button moves to game over modal.
-- Restart returns to start screen.
+- After 3 mistakes, correct tiles blink for 1 second.
+- Round automatically restarts after review blink.
+- Back to Start returns to start screen.
 - Best score persists after reload.
 
 ## API
+- `GET /health` returns `OK`.
 - `GET /api/health` returns `{ "status": "ok" }`.
-- `GET /api/levels` returns configured level list.
-- `GET /api/pattern` returns unique indices with requested count.
+- `GET /api/game/levels` returns configured level list.
+- `GET /api/game/pattern` returns unique indices with requested count.
+- `POST /api/game/submit` returns success for valid payload.
 - Invalid `gridSize` or `count` returns HTTP 400.
 
 ## Test and Build
@@ -25,9 +28,12 @@
 - `frontend`: `npm run build` passes.
 - `backend`: `npm run build` passes.
 
+## Code Documentation
+- All declared functions in `frontend/src` and `backend/src` include JSDoc.
+- JSDoc comments describe intent and expected behavior accurately.
+
 ## UX
 - Tiles and side panel do not overlap.
 - Tile board remains usable on mobile width.
 - No unexpected page scroll that hides primary controls.
 - Visual states are distinguishable (blue/violet/red markers).
-

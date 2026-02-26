@@ -23,8 +23,7 @@ This repo uses a split architecture (`frontend` + `backend`).
   - Clicked correct (`OK`)
   - Missed correct (`.`)
   - Wrong click (`X`)
-- 3 mistakes end the run
-- Game over modal with restart
+- 3 mistakes trigger 1-second answer blink and same-round restart
 - Best score persisted in localStorage (`medhatile_best_score`)
 
 ## Stack
@@ -62,6 +61,9 @@ npm run setup
 copy backend\.env.example backend\.env
 copy frontend\.env.example frontend\.env
 ```
+Default env values:
+- `backend/.env`: `PORT=5000`, `FRONTEND_ORIGIN=http://localhost:5173`, `ROUNDS_PER_LEVEL=5`
+- `frontend/.env`: `VITE_API_URL=http://localhost:5000/api`
 3. Run backend:
 ```bash
 npm run dev:backend
@@ -78,9 +80,29 @@ From repo root:
 - `npm run dev:backend`
 - `npm run build`
 
+## Code Documentation
+- JSDoc is required for all declared functions in `frontend/src` and `backend/src`.
+- Keep descriptions short and focused on behavior, inputs, and outcomes.
+
 ## GitHub
 - CI workflow: `.github/workflows/ci.yml`
 - Runs on every push and pull request:
   - Frontend: install, test, build
   - Backend: install, build
+
+## Deployment
+Backend (Render):
+1. Push repo to GitHub.
+2. Create Render Web Service for `backend`.
+3. Build command: `npm install && npm run build`
+4. Start command: `node dist/server.js`
+5. Env:
+   - `PORT=5000`
+   - `FRONTEND_ORIGIN=https://<your-vercel-domain>.vercel.app`
+
+Frontend (Vercel):
+1. Import project in Vercel.
+2. Set root directory to `frontend`.
+3. Set env var:
+   - `VITE_API_URL=https://<your-render-service>.onrender.com/api`
 

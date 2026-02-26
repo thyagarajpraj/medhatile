@@ -3,6 +3,7 @@ import type { TileState } from "../types/game";
 type TileProps = {
   index: number;
   state: TileState;
+  blink?: boolean;
   disabled: boolean;
   onClick: (index: number) => void;
 };
@@ -27,14 +28,18 @@ const markerClassMap: Partial<Record<TileState, string>> = {
   wrong: "text-rose-700",
 };
 
-export function Tile({ index, state, disabled, onClick }: TileProps) {
+/**
+ * Renders an individual tile with visual state, marker, and click behavior.
+ */
+export function Tile({ index, state, blink = false, disabled, onClick }: TileProps) {
   const marker = stateMarkerMap[state];
   const markerClass = markerClassMap[state] ?? "";
+  const shouldBlink = blink && (state === "answer" || state === "selected_correct");
 
   return (
     <button
       type="button"
-      className={`relative aspect-square w-full rounded-xl border-2 ${stateClassMap[state]}`}
+      className={`relative aspect-square w-full rounded-xl border-2 ${stateClassMap[state]} ${shouldBlink ? "animate-tile-blink" : ""}`}
       disabled={disabled}
       onClick={() => onClick(index)}
       aria-label={`Tile ${index + 1}`}

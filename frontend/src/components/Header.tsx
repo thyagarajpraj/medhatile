@@ -18,6 +18,9 @@ const phaseLabelMap: Record<Phase, string> = {
   gameover: "Game Over",
 };
 
+/**
+ * Displays top-level game metadata and current session stats.
+ */
 export function Header({
   level,
   modeLabel,

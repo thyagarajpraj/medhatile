@@ -23,6 +23,21 @@ body {
   overflow-y: auto;
 }
 
+@keyframes tileBlink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.2;
+  }
+}
+
+.animate-tile-blink {
+  animation: tileBlink 0.2s ease-in-out infinite;
+}
+
 button {
   cursor: pointer;
 }
