@@ -2,6 +2,8 @@
 
 ## Functional
 - Start screen shows mode selector and start button.
+- Top navigation includes a `Movies` link.
+- Visiting `/movies` shows movies section UI.
 - Reveal phase lasts 3 seconds and shows only pattern tiles in blue.
 - Recall accepts clicks only in recall phase.
 - Wrong clicks increase mistake count.
@@ -19,6 +21,10 @@
 - `GET /api/levels` returns configured level list.
 - `GET /api/pattern` returns unique indices with requested count.
 - Invalid `gridSize` or `count` returns HTTP 400.
+- `GET /api/movies` returns paginated movie list.
+- `POST /api/movies` creates a movie with valid payload.
+- `PUT /api/movies/:id` updates movie by id.
+- `DELETE /api/movies/:id` deletes movie by id.
 
 ## Test and Build
 - `frontend`: `npm run test` passes.

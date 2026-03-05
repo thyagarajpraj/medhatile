@@ -13,6 +13,9 @@ This repo uses a split architecture (`frontend` + `backend`).
 
 ## Features
 - Start screen with best score
+- App-level navigation links:
+  - `Game` -> `/`
+  - `Movies` -> `/movies`
 - Difficulty mode dropdown before starting:
   - Easy: 4x4, starts at 3 tiles
   - Medium: 6x6, starts at 4 tiles
@@ -26,6 +29,11 @@ This repo uses a split architecture (`frontend` + `backend`).
 - 3 mistakes end the run
 - Game over modal with restart
 - Best score persisted in localStorage (`medhatile_best_score`)
+- Movies section connected to MongoDB `sample_mflix.movies` with:
+  - list and title search
+  - create movie
+  - update movie
+  - delete movie
 
 ## Stack
 - Frontend: React + Vite + TypeScript + Tailwind CSS
@@ -39,9 +47,20 @@ medhatile/
 |       `-- ci.yml
 |-- frontend/
 |   |-- src/
+|   |   |-- components/
+|   |   |-- features/
+|   |   |   `-- movies/
+|   |   |       |-- components/
+|   |   |       |-- services/
+|   |   |       `-- types/
 |   `-- .env.example
 |-- backend/
 |   |-- src/
+|   |   |-- features/
+|   |   |   `-- movies/
+|   |   |       |-- controllers/
+|   |   |       |-- models/
+|   |   |       `-- routes/
 |   `-- .env.example
 |-- docs/
 |   |-- PRODUCT_SPEC.md
@@ -69,6 +88,11 @@ npm run dev:backend
 4. Run frontend (new terminal):
 ```bash
 npm run dev:frontend
+```
+5. Open app routes:
+```txt
+http://localhost:5173/
+http://localhost:5173/movies
 ```
 
 ## Scripts

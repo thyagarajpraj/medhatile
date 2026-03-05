@@ -3,6 +3,11 @@
 ## Vision
 A minimal cognitive training web app for memory and focus using timed tile recall.
 
+## App Sections
+- `Game` section mounted at `/`
+- `Movies` section mounted at `/movies`
+- Top navigation must expose a visible `Movies` link and allow switching between both routes without full-page refresh.
+
 ## Game Flow
 1. User selects a difficulty mode and taps Start Training.
 2. App reveals a pattern in blue tiles for 3 seconds.
@@ -50,4 +55,5 @@ type GameState = {
 - Round transitions are stable and no stale timer leaks.
 - Mobile layout is usable without clipped core controls.
 - Best score survives page reload.
+- `/movies` route loads and can perform list/create/update/delete against backend `/api/movies` endpoints.
 

@@ -1,6 +1,6 @@
 ﻿# API Contract
 
-Base URL: `http://localhost:4000/api`
+Base URL: `http://127.0.0.1:5000/api`
 
 ## GET /health
 Response:
@@ -43,4 +43,81 @@ Error response shape:
 ```json
 { "error": "Invalid gridSize or count" }
 ```
+
+## Movies CRUD
+Base path: `GET|POST /api/movies`, `GET|PUT|DELETE /api/movies/:id`
+
+### GET /movies
+Query params:
+- `page` (optional positive integer, default `1`)
+- `limit` (optional positive integer, default `12`, max `50`)
+- `title` (optional string, case-insensitive title filter)
+
+Response:
+```json
+{
+  "movies": [
+    {
+      "_id": "69a6ee2c92eb104a10008604",
+      "title": "Example",
+      "year": 2026,
+      "plot": "CRUD probe movie",
+      "genres": ["Test"]
+    }
+  ],
+  "page": 1,
+  "limit": 12,
+  "total": 1
+}
+```
+
+### GET /movies/:id
+Response:
+```json
+{
+  "movie": {
+    "_id": "69a6ee2c92eb104a10008604",
+    "title": "Example",
+    "year": 2026,
+    "plot": "CRUD probe movie",
+    "genres": ["Test"]
+  }
+}
+```
+
+### POST /movies
+Request:
+```json
+{
+  "title": "Example",
+  "year": 2026,
+  "plot": "CRUD probe movie",
+  "genres": ["Test"]
+}
+```
+
+Response:
+- `201` with `{ "movie": { ... } }`
+
+### PUT /movies/:id
+Request:
+```json
+{
+  "title": "Example Updated",
+  "genres": ["Test", "Updated"]
+}
+```
+
+Response:
+- `200` with `{ "movie": { ...updated fields... } }`
+
+### DELETE /movies/:id
+Response:
+```json
+{ "deleted": true, "id": "69a6ee2c92eb104a10008604" }
+```
+
+Validation and errors:
+- Invalid `:id` returns `400` with `{ "error": "Invalid movie id" }`
+- Missing resource returns `404` with `{ "error": "Movie not found" }`
 

@@ -1,0 +1,12 @@
+mongoDB Cred
+
+thyagarajpraj_db_user
+11JyMibTLUmNGFJb
+
+medhauser
+Medha@12345
+
+MONGO_URI=mongodb+srv://medhauser:Medha@12345@cluster0.dsn6vws.mongodb.net/?appName=Cluster0
+ 
+MONGO_URI=mongodb+srv://medhauser:Medha12345@cluster0.dsn6vws.mongodb.net/medhatile?retryWrites=true&w=majority
+PORT=5000
