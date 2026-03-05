@@ -13,9 +13,12 @@ This repo uses a split architecture (`frontend` + `backend`).
 
 ## Features
 - Start screen with best score
-- App-level navigation links:
+- Development-only app navigation links:
   - `Game` -> `/`
   - `Movies` -> `/movies`
+- Production UI behavior:
+  - only `Game` view is rendered
+  - top header/nav is hidden
 - Difficulty mode dropdown before starting:
   - Easy: 4x4, starts at 3 tiles
   - Medium: 6x6, starts at 4 tiles
@@ -101,6 +104,9 @@ npm run dev:frontend
 http://localhost:5173/
 http://localhost:5173/movies
 ```
+Note:
+- `/movies` is available in development.
+- In production, only `/` (game view) is shown by design.
 
 ## Scripts
 From repo root:

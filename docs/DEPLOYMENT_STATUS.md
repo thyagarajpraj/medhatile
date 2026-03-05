@@ -41,14 +41,17 @@ Notes:
 | Item | Status |
 |---|---|
 | Local frontend/backend/db integration | Done |
+| Env-based UI gating (dev: game+movies, prod: game-only) | Done |
+| Mobile gameplay info panel below tiles | Done |
 | Scroll pagination + virtualized list for Movies | Done |
 | Debounced search in Movies | Done |
 | React Query integration + query cache in Movies | Done |
+| Root build (`npm run build`) | Done |
 | Production backend deployment | Pending |
 | Production frontend deployment | Pending |
 | End-to-end production validation | Pending |
 
 ## Known Blockers
 
-- Unresolved merge conflict markers exist in multiple repository files.
-- Because of that, full root build is currently blocked until conflicts are resolved.
+- No repository-level blockers at this time.
+- Remaining work is deployment and production verification.

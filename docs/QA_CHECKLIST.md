@@ -2,8 +2,9 @@
 
 ## Functional
 - Start screen shows mode selector and start button.
-- Top navigation includes a `Movies` link.
-- Visiting `/movies` shows movies section UI.
+- In development mode, top navigation includes a `Movies` link.
+- In development mode, visiting `/movies` shows movies section UI.
+- In production mode, header/nav is hidden and only game view is shown.
 - Reveal phase lasts 3 seconds and shows only pattern tiles in blue.
 - Recall accepts clicks only in recall phase.
 - Wrong clicks increase mistake count.
@@ -41,5 +42,6 @@
 ## UX
 - Tiles and side panel do not overlap.
 - Tile board remains usable on mobile width.
+- On mobile gameplay layout, tile board appears above tile-progress/review panel.
 - No unexpected page scroll that hides primary controls.
 - Visual states are distinguishable (blue/violet/red markers).

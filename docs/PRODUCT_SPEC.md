@@ -6,7 +6,12 @@ A minimal cognitive training web app for memory and focus using timed tile recal
 ## App Sections
 - `Game` section mounted at `/`
 - `Movies` section mounted at `/movies`
-- Top navigation must expose a visible `Movies` link and allow switching between both routes without full-page refresh.
+- Development mode (`import.meta.env.DEV`):
+  - top navigation exposes a visible `Movies` link
+  - switching between `/` and `/movies` happens without full-page refresh
+- Production mode (`import.meta.env.PROD`):
+  - app renders only the game view
+  - top navigation/header is hidden
 
 ## Game Flow
 1. User selects a difficulty mode and taps Start Training.
@@ -56,8 +61,9 @@ type GameState = {
 - Round transitions are stable and no stale timer leaks.
 - Review blink remains visible for full 1 second after max mistakes.
 - Mobile layout is usable without clipped core controls.
+- In mobile gameplay layout, tile stats/answer panel is rendered below the tile board.
 - Best score survives page reload.
-- `/movies` route loads and can perform list/create/update/delete against backend `/api/movies` endpoints.
+- In development mode, `/movies` route loads and can perform list/create/update/delete against backend `/api/movies` endpoints.
 
 ## Code Documentation
 - All declared functions in frontend/backend source include JSDoc comments.

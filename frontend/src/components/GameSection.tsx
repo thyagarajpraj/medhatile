@@ -293,7 +293,7 @@ export function GameSection() {
           </div>
         ) : (
           <div className="mt-4 flex min-h-0 flex-1 flex-col gap-3 lg:flex-row lg:gap-4">
-            <div className="order-2 flex min-h-[300px] flex-1 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50/70 p-3 lg:order-1">
+            <div className="order-1 flex min-h-[300px] flex-1 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50/70 p-3">
               {isLoadingRound ? (
                 <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-slate-50 p-8 text-center text-slate-600">
                   Preparing round...
@@ -310,7 +310,7 @@ export function GameSection() {
               )}
             </div>
 
-            <aside className="order-1 w-full shrink-0 rounded-2xl border border-slate-200 bg-slate-50 p-3 lg:order-2 lg:w-72">
+            <aside className="order-2 w-full shrink-0 rounded-2xl border border-slate-200 bg-slate-50 p-3 lg:w-72">
               <section className="rounded-lg border border-slate-200 bg-white p-2">
                 <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">Tile Progress</p>
                 <div className="mt-1.5 flex flex-wrap gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-slate-700">
