@@ -1,8 +1,11 @@
 import { Router } from "express";
-import { getHealth, getLevels, getPattern } from "../controllers/game.controller";
+import { getGameConfig, getLevels, getPattern, submitScore } from "../controllers/game.controller";
 
-export const gameRoutes = Router();
+const router = Router();
 
-gameRoutes.get("/health", getHealth);
-gameRoutes.get("/levels", getLevels);
-gameRoutes.get("/pattern", getPattern);
+router.get("/config", getGameConfig);
+router.get("/levels", getLevels);
+router.get("/pattern", getPattern);
+router.post("/submit", submitScore);
+
+export default router;

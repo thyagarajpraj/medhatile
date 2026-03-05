@@ -6,6 +6,9 @@ export const DIFFICULTY_MODES: DifficultyConfig[] = [
   { mode: "hard", label: "Hard", grid: 8, startTiles: 5, maxTiles: 20 },
 ];
 
+/**
+ * Returns a difficulty config by mode, defaulting to Easy if mode is unknown.
+ */
 export function getDifficultyConfig(mode: DifficultyMode): DifficultyConfig {
   return DIFFICULTY_MODES.find((entry) => entry.mode === mode) ?? DIFFICULTY_MODES[0];
 }

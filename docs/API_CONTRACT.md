@@ -1,14 +1,20 @@
-﻿# API Contract
+# API Contract
 
-Base URL: `http://127.0.0.1:5000/api`
+Base URL (local): `http://127.0.0.1:5000/api`
 
 ## GET /health
+Response body:
+```txt
+OK
+```
+
+## GET /api/health
 Response:
 ```json
 { "status": "ok" }
 ```
 
-## GET /levels
+## GET /api/game/levels
 Response:
 ```json
 {
@@ -22,10 +28,19 @@ Response:
 }
 ```
 
-## GET /pattern
+## GET /api/game/config
+Response:
+```json
+{ "roundsPerLevel": 5 }
+```
+
+Validation:
+- `roundsPerLevel` is a positive integer controlled by backend env (`ROUNDS_PER_LEVEL`).
+
+## GET /api/game/pattern
 Request:
 ```txt
-/pattern?gridSize=4&count=3
+/api/game/pattern?gridSize=4&count=3
 ```
 
 Response:
@@ -44,10 +59,32 @@ Error response shape:
 { "error": "Invalid gridSize or count" }
 ```
 
-## Movies CRUD
-Base path: `GET|POST /api/movies`, `GET|PUT|DELETE /api/movies/:id`
+## POST /api/game/submit
+Request:
+```json
+{ "score": 7, "level": 8 }
+```
 
-### GET /movies
+Success response:
+```json
+{ "success": true, "message": "Score received" }
+```
+
+Validation:
+- `score` must be an integer >= 0.
+- `level` must be an integer > 0.
+
+Error response shape:
+```json
+{ "success": false, "message": "Invalid score payload" }
+```
+
+## Movies CRUD
+Base paths:
+- `GET|POST /api/movies`
+- `GET|PUT|DELETE /api/movies/:id`
+
+### GET /api/movies
 Query params:
 - `page` (optional positive integer, default `1`)
 - `limit` (optional positive integer, default `12`, max `50`)
@@ -71,7 +108,7 @@ Response:
 }
 ```
 
-### GET /movies/:id
+### GET /api/movies/:id
 Response:
 ```json
 {
@@ -85,7 +122,7 @@ Response:
 }
 ```
 
-### POST /movies
+### POST /api/movies
 Request:
 ```json
 {
@@ -99,7 +136,7 @@ Request:
 Response:
 - `201` with `{ "movie": { ... } }`
 
-### PUT /movies/:id
+### PUT /api/movies/:id
 Request:
 ```json
 {
@@ -111,7 +148,7 @@ Request:
 Response:
 - `200` with `{ "movie": { ...updated fields... } }`
 
-### DELETE /movies/:id
+### DELETE /api/movies/:id
 Response:
 ```json
 { "deleted": true, "id": "69a6ee2c92eb104a10008604" }
@@ -120,4 +157,3 @@ Response:
 Validation and errors:
 - Invalid `:id` returns `400` with `{ "error": "Invalid movie id" }`
 - Missing resource returns `404` with `{ "error": "Movie not found" }`
-

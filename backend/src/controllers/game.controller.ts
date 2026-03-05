@@ -1,16 +1,38 @@
 import { type Request, type Response } from "express";
+import { getRoundsPerLevel } from "../lib/config";
 import { LEVELS } from "../lib/difficulty";
 import { generatePattern } from "../lib/generatePattern";
+import type { ScoreSubmission } from "../types/game";
 
-export const getHealth = (_req: Request, res: Response): void => {
-  res.json({ status: "ok" });
-};
+export function submitScore(req: Request<unknown, unknown, Partial<ScoreSubmission>>, res: Response): void {
+  const { score, level } = req.body ?? {};
+  const isScoreValid = typeof score === "number" && Number.isInteger(score) && score >= 0;
+  const isLevelValid = typeof level === "number" && Number.isInteger(level) && level > 0;
 
-export const getLevels = (_req: Request, res: Response): void => {
-  res.json({ levels: LEVELS });
-};
+  if (!isScoreValid || !isLevelValid) {
+    res.status(400).json({ success: false, message: "Invalid score payload" });
+    return;
+  }
 
-export const getPattern = (req: Request, res: Response): void => {
+  console.log("Score received:", { score, level });
+
+  res.status(200).json({
+    success: true,
+    message: "Score received",
+  });
+}
+
+export function getLevels(_req: Request, res: Response): void {
+  res.status(200).json({ levels: LEVELS });
+}
+
+export function getGameConfig(_req: Request, res: Response): void {
+  res.status(200).json({
+    roundsPerLevel: getRoundsPerLevel(),
+  });
+}
+
+export function getPattern(req: Request, res: Response): void {
   const gridSize = Number(req.query.gridSize);
   const count = Number(req.query.count);
 
@@ -27,8 +49,8 @@ export const getPattern = (req: Request, res: Response): void => {
 
   try {
     const pattern = generatePattern(gridSize, count);
-    res.json({ pattern });
+    res.status(200).json({ pattern });
   } catch {
     res.status(400).json({ error: "Invalid gridSize or count" });
   }
-};
+}

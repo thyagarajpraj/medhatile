@@ -1,13 +1,23 @@
 import cors from "cors";
 import express, { type Request, type Response } from "express";
 import { movieRoutes } from "./features/movies/routes/movie.routes";
-import { gameRoutes } from "./routes/game.routes";
+import gameRoutes from "./routes/game.routes";
 
 const app = express();
-const getFrontendOrigin = (): string => process.env.FRONTEND_ORIGIN || "http://localhost:5173";
 const isHttpDebugEnabled = (): boolean => process.env.DEBUG_HTTP === "true";
 
-app.use(cors({ origin: getFrontendOrigin() }));
+const rawOrigins = process.env.FRONTEND_ORIGIN ?? "";
+const allowedOrigins = rawOrigins
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+app.use(
+  cors({
+    origin: allowedOrigins.length === 0 ? true : allowedOrigins,
+  }),
+);
+
 app.use(express.json());
 
 app.use((req, _res, next) => {
@@ -20,8 +30,7 @@ app.use((req, _res, next) => {
 });
 
 app.use((req, res, next) => {
-  const isMoviesRequest = req.originalUrl.startsWith("/api/movies");
-  if (!isMoviesRequest) {
+  if (!req.originalUrl.startsWith("/api/movies")) {
     next();
     return;
   }
@@ -37,13 +46,18 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/api/movies", movieRoutes);
-app.use("/api", gameRoutes);
+app.get("/health", (_req: Request, res: Response) => {
+  res.status(200).send("OK");
+});
 
-app.use((req: Request, res: Response) => {
-  if (req.originalUrl.startsWith("/api/movies")) {
-    console.warn(`MOVIES 404 ${req.method} ${req.originalUrl}`);
-  }
+app.get("/api/health", (_req: Request, res: Response) => {
+  res.status(200).json({ status: "ok" });
+});
+
+app.use("/api/game", gameRoutes);
+app.use("/api/movies", movieRoutes);
+
+app.use((_req: Request, res: Response) => {
   res.status(404).json({ error: "Route not found" });
 });
 

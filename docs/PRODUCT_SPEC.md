@@ -14,12 +14,13 @@ A minimal cognitive training web app for memory and focus using timed tile recal
 3. User recalls and taps tiles.
 4. Correct taps are tracked; wrong taps increase mistakes.
 5. At 3 mistakes, app enters a review phase showing the full answer.
-6. User taps Next to open game over modal and restart.
-7. If user completes a round before 3 mistakes, the next round increases tile count.
+6. Correct-answer tiles blink for 1 second during review.
+7. App restarts the same round after review.
+8. If user completes a round before 3 mistakes, the next round increases tile count.
 
 ## Phases
 ```ts
-type Phase = "idle" | "reveal" | "recall" | "review" | "gameover";
+type Phase = "idle" | "reveal" | "recall" | "review";
 ```
 
 ## Core State
@@ -53,7 +54,11 @@ type GameState = {
 ## Success Criteria
 - Reveal remains visible for full 3 seconds.
 - Round transitions are stable and no stale timer leaks.
+- Review blink remains visible for full 1 second after max mistakes.
 - Mobile layout is usable without clipped core controls.
 - Best score survives page reload.
 - `/movies` route loads and can perform list/create/update/delete against backend `/api/movies` endpoints.
+
+## Code Documentation
+- All declared functions in frontend/backend source include JSDoc comments.
 

@@ -1,3 +1,6 @@
+/**
+ * Generates unique random tile indexes for a square grid.
+ */
 export function generatePattern(gridSize: number, count: number): number[] {
   const total = gridSize * gridSize;
   const indices = new Set<number>();

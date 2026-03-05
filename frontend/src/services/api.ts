@@ -15,8 +15,38 @@ async function parseError(response: Response, fallback: string): Promise<Error> 
   return new Error(fallback);
 }
 
+/**
+ * Represents backend-controlled game config values.
+ */
+export type GameConfig = {
+  roundsPerLevel: number;
+};
+
+/**
+ * Fetches runtime game configuration from backend.
+ */
+export async function fetchGameConfigFromApi(): Promise<GameConfig> {
+  const response = await fetch(`${API_BASE_URL}/game/config`);
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch game config");
+  }
+
+  const payload = (await response.json()) as { roundsPerLevel?: number };
+  const roundsPerLevel = payload.roundsPerLevel;
+  if (typeof roundsPerLevel !== "number" || !Number.isInteger(roundsPerLevel) || roundsPerLevel <= 0) {
+    throw new Error("Invalid game config payload");
+  }
+
+  return { roundsPerLevel };
+}
+
+/**
+ * Fetches difficulty levels from backend.
+ * Falls back handling is done by caller.
+ */
 export async function fetchLevelsFromApi(): Promise<LevelConfig[]> {
-  const response = await fetch(`${API_BASE_URL}/levels`);
+  const response = await fetch(`${API_BASE_URL}/game/levels`);
 
   if (!response.ok) {
     throw await parseError(response, "Failed to fetch levels");
@@ -31,13 +61,16 @@ export async function fetchLevelsFromApi(): Promise<LevelConfig[]> {
   return payload.levels;
 }
 
+/**
+ * Requests a random unique tile pattern for a given grid size and tile count.
+ */
 export async function fetchPatternFromApi(gridSize: number, count: number): Promise<number[]> {
   const params = new URLSearchParams({
     gridSize: String(gridSize),
     count: String(count),
   });
 
-  const response = await fetch(`${API_BASE_URL}/pattern?${params.toString()}`);
+  const response = await fetch(`${API_BASE_URL}/game/pattern?${params.toString()}`);
 
   if (!response.ok) {
     throw await parseError(response, "Failed to fetch pattern");
@@ -50,4 +83,21 @@ export async function fetchPatternFromApi(gridSize: number, count: number): Prom
   }
 
   return payload.pattern;
+}
+
+/**
+ * Submits a completed run snapshot to backend for future persistence/analytics.
+ */
+export async function submitScoreToApi(score: number, level: number): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/game/submit`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ score, level }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to submit score");
+  }
 }

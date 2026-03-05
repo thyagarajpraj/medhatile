@@ -5,6 +5,9 @@ type GameOverModalProps = {
   onRestart: () => void;
 };
 
+/**
+ * Displays final score details and restart action when game-over mode is enabled.
+ */
 export function GameOverModal({ open, score, bestScore, onRestart }: GameOverModalProps) {
   if (!open) {
     return null;
