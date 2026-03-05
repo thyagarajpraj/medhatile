@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { GameSection } from "./components/GameSection";
-import { isDev } from "./config/env";
+import { API_BASE_URL } from "./config/api";
+import { isDev, isProd } from "./config/env";
 import { MoviesSection } from "./features/movies/components/MoviesSection";
 
 type AppRoute = "/" | "/movies";
@@ -21,6 +22,12 @@ function App() {
     const onPopState = () => setCurrentRoute(resolveRoute(window.location.pathname));
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
+  }, []);
+
+  useEffect(() => {
+    console.info(
+      `[env-check] mode=${import.meta.env.MODE} prod=${String(isProd)} dev=${String(isDev)} apiBase=${API_BASE_URL}`,
+    );
   }, []);
 
   const navigate = (to: AppRoute) => {
