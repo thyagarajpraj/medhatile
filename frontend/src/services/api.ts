@@ -1,6 +1,5 @@
+import { buildApiUrl } from "../config/api";
 import type { LevelConfig } from "../types/game";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL?.trim() || "http://127.0.0.1:5000/api";
 
 async function parseError(response: Response, fallback: string): Promise<Error> {
   try {
@@ -26,7 +25,7 @@ export type GameConfig = {
  * Fetches runtime game configuration from backend.
  */
 export async function fetchGameConfigFromApi(): Promise<GameConfig> {
-  const response = await fetch(`${API_BASE_URL}/game/config`);
+  const response = await fetch(buildApiUrl("/game/config"));
 
   if (!response.ok) {
     throw new Error("Failed to fetch game config");
@@ -46,7 +45,7 @@ export async function fetchGameConfigFromApi(): Promise<GameConfig> {
  * Falls back handling is done by caller.
  */
 export async function fetchLevelsFromApi(): Promise<LevelConfig[]> {
-  const response = await fetch(`${API_BASE_URL}/game/levels`);
+  const response = await fetch(buildApiUrl("/game/levels"));
 
   if (!response.ok) {
     throw await parseError(response, "Failed to fetch levels");
@@ -70,7 +69,7 @@ export async function fetchPatternFromApi(gridSize: number, count: number): Prom
     count: String(count),
   });
 
-  const response = await fetch(`${API_BASE_URL}/game/pattern?${params.toString()}`);
+  const response = await fetch(`${buildApiUrl("/game/pattern")}?${params.toString()}`);
 
   if (!response.ok) {
     throw await parseError(response, "Failed to fetch pattern");
@@ -89,7 +88,7 @@ export async function fetchPatternFromApi(gridSize: number, count: number): Prom
  * Submits a completed run snapshot to backend for future persistence/analytics.
  */
 export async function submitScoreToApi(score: number, level: number): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}/game/submit`, {
+  const response = await fetch(buildApiUrl("/game/submit"), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

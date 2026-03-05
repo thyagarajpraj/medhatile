@@ -86,7 +86,8 @@ copy frontend\.env.example frontend\.env
 ```
 Default env values:
 - `backend/.env`: `PORT=5000`, `FRONTEND_ORIGIN=http://localhost:5173`, `ROUNDS_PER_LEVEL=5`
-- `frontend/.env`: `VITE_API_URL=http://localhost:5000/api`
+- `frontend/.env.development`: `VITE_API_BASE_URL=http://127.0.0.1:5000/api`
+- `frontend/.env.production`: `VITE_API_BASE_URL=/api` (override in Vercel with deployed backend URL)
 3. Run backend:
 ```bash
 npm run dev:backend
@@ -132,5 +133,5 @@ Frontend (Vercel):
 1. Import project in Vercel.
 2. Set root directory to `frontend`.
 3. Set env var:
-   - `VITE_API_URL=https://<your-render-service>.onrender.com/api`
+   - `VITE_API_BASE_URL=https://<your-render-service>.onrender.com/api`
 

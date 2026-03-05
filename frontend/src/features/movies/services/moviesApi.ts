@@ -1,6 +1,7 @@
+import { API_BASE_URL, buildApiUrl } from "../../../config/api";
 import type { Movie, MovieListResponse, MoviePayload, MovieUpdatePayload } from "../types/movie";
 
-export const MOVIES_API_BASE_URL = import.meta.env.VITE_API_BASE_URL?.trim() || "http://127.0.0.1:5000/api";
+export const MOVIES_API_BASE_URL = API_BASE_URL;
 
 async function parseError(response: Response, fallback: string): Promise<Error> {
   try {
@@ -35,7 +36,7 @@ export async function fetchMoviesFromApi(params?: {
   }
 
   const queryString = query.toString();
-  const endpoint = queryString ? `${MOVIES_API_BASE_URL}/movies?${queryString}` : `${MOVIES_API_BASE_URL}/movies`;
+  const endpoint = queryString ? `${buildApiUrl("/movies")}?${queryString}` : buildApiUrl("/movies");
   if (import.meta.env.DEV) {
     console.log(`[movies-api] GET ${endpoint}`);
   }
@@ -58,7 +59,7 @@ export async function fetchMoviesFromApi(params?: {
 }
 
 export async function fetchMovieByIdFromApi(id: string): Promise<Movie> {
-  const endpoint = `${MOVIES_API_BASE_URL}/movies/${id}`;
+  const endpoint = buildApiUrl(`/movies/${id}`);
   if (import.meta.env.DEV) {
     console.log(`[movies-api] GET ${endpoint}`);
   }
@@ -77,7 +78,7 @@ export async function fetchMovieByIdFromApi(id: string): Promise<Movie> {
 }
 
 export async function createMovieFromApi(payload: MoviePayload): Promise<Movie> {
-  const endpoint = `${MOVIES_API_BASE_URL}/movies`;
+  const endpoint = buildApiUrl("/movies");
   if (import.meta.env.DEV) {
     console.log(`[movies-api] POST ${endpoint}`);
   }
@@ -100,7 +101,7 @@ export async function createMovieFromApi(payload: MoviePayload): Promise<Movie> 
 }
 
 export async function updateMovieFromApi(id: string, payload: MovieUpdatePayload): Promise<Movie> {
-  const endpoint = `${MOVIES_API_BASE_URL}/movies/${id}`;
+  const endpoint = buildApiUrl(`/movies/${id}`);
   if (import.meta.env.DEV) {
     console.log(`[movies-api] PUT ${endpoint}`);
   }
@@ -123,7 +124,7 @@ export async function updateMovieFromApi(id: string, payload: MovieUpdatePayload
 }
 
 export async function deleteMovieFromApi(id: string): Promise<void> {
-  const endpoint = `${MOVIES_API_BASE_URL}/movies/${id}`;
+  const endpoint = buildApiUrl(`/movies/${id}`);
   if (import.meta.env.DEV) {
     console.log(`[movies-api] DELETE ${endpoint}`);
   }
