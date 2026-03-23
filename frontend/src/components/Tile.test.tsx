@@ -1,6 +1,10 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import "@testing-library/jest-dom/vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { Tile } from "./Tile";
+
+afterEach(() => {
+  cleanup();
+});
 
 describe("Tile", () => {
   it("renders marker text for each interactive state", () => {

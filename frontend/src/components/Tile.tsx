@@ -34,7 +34,7 @@ const markerClassMap: Partial<Record<TileState, string>> = {
 export function Tile({ index, state, blink = false, disabled, onClick }: TileProps) {
   const marker = stateMarkerMap[state];
   const markerClass = markerClassMap[state] ?? "";
-  const shouldBlink = blink && (state === "answer" || state === "selected_correct");
+  const shouldBlink = blink && (state === "reveal" || state === "answer" || state === "selected_correct");
 
   return (
     <button

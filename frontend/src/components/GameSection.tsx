@@ -1,17 +1,22 @@
 import { type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DIFFICULTY_MODES, getDifficultyConfig } from "../lib/difficulty";
+import { extendPattern } from "../lib/extendPattern";
 import { generatePattern } from "../lib/generatePattern";
 import { fetchPatternFromApi } from "../services/api";
 import type { DifficultyConfig, DifficultyMode, GameState, Phase } from "../types/game";
-import { GameOverModal } from "./GameOverModal";
 import { Grid } from "./Grid";
 import { Header } from "./Header";
 
 const BEST_SCORE_KEY = "medhatile_best_score";
-const REVEAL_DURATION_MS = 3000;
+const REVEAL_BLINK_DURATION_MS = 1000;
+const REVEAL_DURATION_MS = 1000;
+const REVIEW_BLINK_DURATION_MS = 1000;
 const BETWEEN_ROUNDS_MS = 450;
 const MAX_MISTAKES = 3;
 
+/**
+ * Creates the initial game state for the selected difficulty.
+ */
 function createInitialGameState(config: DifficultyConfig): GameState {
   return {
     level: 1,
@@ -25,9 +30,16 @@ function createInitialGameState(config: DifficultyConfig): GameState {
   };
 }
 
+/**
+ * Renders the main memory-training game and coordinates round progression.
+ */
 export function GameSection() {
   const revealTimeoutRef = useRef<number | null>(null);
+  const revealBlinkTimeoutRef = useRef<number | null>(null);
   const revealFrameRef = useRef<number | null>(null);
+  const reviewRestartTimeoutRef = useRef<number | null>(null);
+  const roundTransitionTimeoutRef = useRef<number | null>(null);
+  const roundSuccessTimeoutRef = useRef<number | null>(null);
 
   const [difficultyMode, setDifficultyMode] = useState<DifficultyMode>("easy");
   const [gameState, setGameState] = useState<GameState>(() => createInitialGameState(getDifficultyConfig("easy")));
@@ -35,58 +47,102 @@ export function GameSection() {
   const [bestScore, setBestScore] = useState(0);
   const [hasStarted, setHasStarted] = useState(false);
   const [isLoadingRound, setIsLoadingRound] = useState(false);
+  const [isRevealBlinkActive, setIsRevealBlinkActive] = useState(false);
+  const [isReviewBlinkActive, setIsReviewBlinkActive] = useState(false);
 
   const currentModeConfig = useMemo(() => getDifficultyConfig(difficultyMode), [difficultyMode]);
 
+  /**
+   * Clears timers related to the current reveal phase and reveal blink.
+   */
   const clearRevealTimer = useCallback(() => {
     if (revealTimeoutRef.current !== null) {
       window.clearTimeout(revealTimeoutRef.current);
       revealTimeoutRef.current = null;
     }
 
+    if (revealBlinkTimeoutRef.current !== null) {
+      window.clearTimeout(revealBlinkTimeoutRef.current);
+      revealBlinkTimeoutRef.current = null;
+    }
+
     if (revealFrameRef.current !== null) {
       window.cancelAnimationFrame(revealFrameRef.current);
       revealFrameRef.current = null;
     }
+
+    setIsRevealBlinkActive(false);
   }, []);
 
+  /**
+   * Clears delayed timers used for round completion and round transitions.
+   */
+  const clearRoundTimers = useCallback(() => {
+    if (reviewRestartTimeoutRef.current !== null) {
+      window.clearTimeout(reviewRestartTimeoutRef.current);
+      reviewRestartTimeoutRef.current = null;
+    }
+
+    if (roundTransitionTimeoutRef.current !== null) {
+      window.clearTimeout(roundTransitionTimeoutRef.current);
+      roundTransitionTimeoutRef.current = null;
+    }
+
+    if (roundSuccessTimeoutRef.current !== null) {
+      window.clearTimeout(roundSuccessTimeoutRef.current);
+      roundSuccessTimeoutRef.current = null;
+    }
+
+    setIsReviewBlinkActive(false);
+  }, []);
+
+  /**
+   * Starts the reveal countdown and the shorter reveal blink effect.
+   */
   const scheduleRevealEnd = useCallback(() => {
     if (revealFrameRef.current !== null) {
       window.cancelAnimationFrame(revealFrameRef.current);
     }
 
+    setIsRevealBlinkActive(true);
     revealFrameRef.current = window.requestAnimationFrame(() => {
+      revealBlinkTimeoutRef.current = window.setTimeout(() => {
+        setIsRevealBlinkActive(false);
+      }, REVEAL_BLINK_DURATION_MS);
+
       revealTimeoutRef.current = window.setTimeout(() => {
         setGameState((prev) => (prev.phase === "reveal" ? { ...prev, phase: "recall" } : prev));
       }, REVEAL_DURATION_MS);
     });
   }, []);
 
-  const finishGame = useCallback(
-    (finalScore: number) => {
-      clearRevealTimer();
-      setGameState((prev) => ({ ...prev, phase: "gameover" }));
+  /**
+   * Persists the best score whenever the current run exceeds it.
+   */
+  const syncBestScore = useCallback((score: number) => {
+    setBestScore((prevBest) => {
+      const nextBest = Math.max(prevBest, score);
+      if (nextBest === prevBest) {
+        return prevBest;
+      }
 
-      setBestScore((prevBest) => {
-        const nextBest = Math.max(prevBest, finalScore);
-        try {
-          localStorage.setItem(BEST_SCORE_KEY, String(nextBest));
-        } catch {
-          // Ignore storage failure in restricted browser modes.
-        }
-        return nextBest;
-      });
-    },
-    [clearRevealTimer],
-  );
+      try {
+        localStorage.setItem(BEST_SCORE_KEY, String(nextBest));
+      } catch {
+        // Ignore storage failure in restricted browser modes.
+      }
 
-  const showGameOverAfterReview = useCallback(() => {
-    finishGame(gameState.score);
-  }, [finishGame, gameState.score]);
+      return nextBest;
+    });
+  }, []);
 
+  /**
+   * Loads and starts a round for the target level and tile count.
+   */
   const startRound = useCallback(
-    async (targetLevel: number, targetTiles: number, targetScore: number) => {
+    async (targetLevel: number, targetTiles: number, targetScore: number, previousPattern: number[] = []) => {
       clearRevealTimer();
+      clearRoundTimers();
 
       const modeConfig = getDifficultyConfig(difficultyMode);
       const safeTiles = Math.max(modeConfig.startTiles, Math.min(targetTiles, modeConfig.maxTiles));
@@ -111,11 +167,16 @@ export function GameSection() {
         nextPattern = generatePattern(modeConfig.grid, safeTiles);
       }
 
+      const resolvedPattern =
+        previousPattern.length > 0
+          ? extendPattern(previousPattern, nextPattern, modeConfig.grid, safeTiles)
+          : nextPattern;
+
       setGameState({
         level: targetLevel,
         gridSize: modeConfig.grid,
         tilesToRemember: safeTiles,
-        pattern: nextPattern,
+        pattern: resolvedPattern,
         userSelections: [],
         mistakes: 0,
         phase: "reveal",
@@ -124,44 +185,69 @@ export function GameSection() {
       setIsLoadingRound(false);
       scheduleRevealEnd();
     },
-    [clearRevealTimer, difficultyMode, scheduleRevealEnd],
+    [clearRevealTimer, clearRoundTimers, difficultyMode, scheduleRevealEnd],
   );
 
+  /**
+   * Starts a new run from the currently selected difficulty mode.
+   */
   const startGame = useCallback(() => {
     const modeConfig = getDifficultyConfig(difficultyMode);
     setHasStarted(true);
     void startRound(1, modeConfig.startTiles, 0);
   }, [difficultyMode, startRound]);
 
+  /**
+   * Advances the player to the next round after a successful recall.
+   */
   const handleRoundSuccess = useCallback(() => {
-    setGameState((prev) => {
-      const modeConfig = getDifficultyConfig(difficultyMode);
-      const nextLevel = prev.level + 1;
-      const nextScore = prev.score + 1;
-      const nextTiles = Math.min(prev.tilesToRemember + 1, modeConfig.maxTiles);
+    const modeConfig = getDifficultyConfig(difficultyMode);
+    const nextLevel = gameState.level + 1;
+    const nextScore = gameState.score + 1;
+    const nextTiles = Math.min(gameState.tilesToRemember + 1, modeConfig.maxTiles);
+    const scheduledRound = {
+      level: nextLevel,
+      score: nextScore,
+      tiles: nextTiles,
+      pattern: [...gameState.pattern],
+    };
 
-      setIsLoadingRound(true);
-      setWrongSelections([]);
+    syncBestScore(nextScore);
 
-      window.setTimeout(() => {
-        void startRound(nextLevel, nextTiles, nextScore);
-      }, BETWEEN_ROUNDS_MS);
+    if (roundTransitionTimeoutRef.current !== null) {
+      window.clearTimeout(roundTransitionTimeoutRef.current);
+    }
 
-      return {
-        level: nextLevel,
-        gridSize: modeConfig.grid,
-        tilesToRemember: nextTiles,
-        pattern: [],
-        userSelections: [],
-        mistakes: 0,
-        score: nextScore,
-        phase: "idle",
-      };
+    if (roundSuccessTimeoutRef.current !== null) {
+      window.clearTimeout(roundSuccessTimeoutRef.current);
+      roundSuccessTimeoutRef.current = null;
+    }
+
+    setGameState({
+      level: nextLevel,
+      gridSize: modeConfig.grid,
+      tilesToRemember: nextTiles,
+      pattern: [],
+      userSelections: [],
+      mistakes: 0,
+      score: nextScore,
+      phase: "idle",
     });
-  }, [difficultyMode, startRound]);
+    setIsLoadingRound(true);
+    setWrongSelections([]);
+    roundTransitionTimeoutRef.current = window.setTimeout(() => {
+      roundTransitionTimeoutRef.current = null;
+      void startRound(scheduledRound.level, scheduledRound.tiles, scheduledRound.score, scheduledRound.pattern);
+    }, BETWEEN_ROUNDS_MS);
+  }, [difficultyMode, gameState.level, gameState.pattern, gameState.score, gameState.tilesToRemember, startRound, syncBestScore]);
 
+  /**
+   * Handles a tile press during recall and tracks correct or incorrect choices.
+   */
   const handleTileClick = useCallback(
     (tileIndex: number) => {
+      let wrongSelection: number | null = null;
+
       setGameState((prev) => {
         if (prev.phase !== "recall") {
           return prev;
@@ -176,17 +262,15 @@ export function GameSection() {
           const updatedSelections = [...prev.userSelections, tileIndex];
           const hasCompletedRound = updatedSelections.length === prev.pattern.length;
 
-          if (hasCompletedRound) {
-            window.setTimeout(() => {
-              handleRoundSuccess();
-            }, 120);
-          }
-
-          return { ...prev, userSelections: updatedSelections };
+          return {
+            ...prev,
+            userSelections: updatedSelections,
+            phase: hasCompletedRound ? "idle" : prev.phase,
+          };
         }
 
         const nextMistakes = prev.mistakes + 1;
-        setWrongSelections((currentWrong) => [...currentWrong, tileIndex]);
+        wrongSelection = tileIndex;
 
         if (nextMistakes >= MAX_MISTAKES) {
           return { ...prev, mistakes: nextMistakes, phase: "review" };
@@ -194,29 +278,44 @@ export function GameSection() {
 
         return { ...prev, mistakes: nextMistakes };
       });
+
+      if (wrongSelection !== null) {
+        const wrongTile = wrongSelection;
+        setWrongSelections((currentWrong) => [...currentWrong, wrongTile]);
+      }
     },
-    [handleRoundSuccess, wrongSelections],
+    [wrongSelections],
   );
 
+  /**
+   * Resets the game when the user switches difficulty modes.
+   */
   const handleModeChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const nextMode = event.target.value as DifficultyMode;
     const nextConfig = getDifficultyConfig(nextMode);
 
     clearRevealTimer();
+    clearRoundTimers();
     setDifficultyMode(nextMode);
     setHasStarted(false);
     setIsLoadingRound(false);
+    setIsRevealBlinkActive(false);
     setWrongSelections([]);
     setGameState(createInitialGameState(nextConfig));
   };
 
+  /**
+   * Returns from the game-over modal to the start screen.
+   */
   const returnToStart = useCallback(() => {
     clearRevealTimer();
+    clearRoundTimers();
     setHasStarted(false);
     setIsLoadingRound(false);
+    setIsRevealBlinkActive(false);
     setWrongSelections([]);
     setGameState(createInitialGameState(getDifficultyConfig(difficultyMode)));
-  }, [clearRevealTimer, difficultyMode]);
+  }, [clearRevealTimer, clearRoundTimers, difficultyMode]);
 
   useEffect(() => {
     try {
@@ -229,16 +328,71 @@ export function GameSection() {
     }
   }, []);
 
+  /**
+   * Detects completed rounds and schedules the next-round transition once.
+   */
   useEffect(() => {
-    return () => clearRevealTimer();
-  }, [clearRevealTimer]);
+    if (
+      !hasStarted ||
+      isLoadingRound ||
+      gameState.phase !== "idle" ||
+      gameState.pattern.length === 0 ||
+      gameState.userSelections.length !== gameState.pattern.length
+    ) {
+      return;
+    }
+
+    if (roundSuccessTimeoutRef.current !== null) {
+      return;
+    }
+
+    roundSuccessTimeoutRef.current = window.setTimeout(() => {
+      roundSuccessTimeoutRef.current = null;
+      handleRoundSuccess();
+    }, 120);
+  }, [
+    gameState.pattern.length,
+    gameState.phase,
+    gameState.userSelections.length,
+    handleRoundSuccess,
+    hasStarted,
+    isLoadingRound,
+  ]);
+
+  /**
+   * Shows the answer blink after three mistakes, then restarts the same round.
+   */
+  useEffect(() => {
+    if (gameState.phase !== "review" || isLoadingRound) {
+      return;
+    }
+
+    if (reviewRestartTimeoutRef.current !== null) {
+      return;
+    }
+
+    setIsReviewBlinkActive(true);
+    reviewRestartTimeoutRef.current = window.setTimeout(() => {
+      reviewRestartTimeoutRef.current = null;
+      void startRound(gameState.level, gameState.tilesToRemember, gameState.score, gameState.pattern);
+    }, REVIEW_BLINK_DURATION_MS);
+  }, [gameState.level, gameState.pattern, gameState.phase, gameState.score, gameState.tilesToRemember, isLoadingRound, startRound]);
+
+  /**
+   * Cleans up active timers when the component unmounts.
+   */
+  useEffect(() => {
+    return () => {
+      clearRevealTimer();
+      clearRoundTimers();
+    };
+  }, [clearRevealTimer, clearRoundTimers]);
 
   const phaseHint: Record<Phase, string> = {
     idle: "Get ready for the next pattern.",
     reveal: "Observe the blue pattern.",
     recall: "Tap the same tiles from memory.",
     review: "Answer view: blue means clicked correct, purple means missed, red means wrong.",
-    gameover: "Round complete. Review score and restart.",
   };
 
   const totalBlueTiles = gameState.pattern.length > 0 ? gameState.pattern.length : gameState.tilesToRemember;
@@ -305,6 +459,8 @@ export function GameSection() {
                   userSelections={gameState.userSelections}
                   wrongSelections={wrongSelections}
                   phase={gameState.phase}
+                  blinkReveal={isRevealBlinkActive}
+                  blinkAnswers={isReviewBlinkActive}
                   onTileClick={handleTileClick}
                 />
               )}
@@ -336,28 +492,19 @@ export function GameSection() {
                 </div>
               )}
 
-              {gameState.phase === "review" && (
-                <div className="mt-4">
-                  <button
-                    type="button"
-                    onClick={showGameOverAfterReview}
-                    className="w-full rounded-xl bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-slate-700"
-                  >
-                    Next
-                  </button>
-                </div>
-              )}
+              <div className="mt-4">
+                <button
+                  type="button"
+                  onClick={returnToStart}
+                  className="w-full rounded-xl border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-100"
+                >
+                  Back to Start
+                </button>
+              </div>
             </aside>
           </div>
         )}
       </section>
-
-      <GameOverModal
-        open={gameState.phase === "gameover"}
-        score={gameState.score}
-        bestScore={bestScore}
-        onRestart={returnToStart}
-      />
     </>
   );
 }

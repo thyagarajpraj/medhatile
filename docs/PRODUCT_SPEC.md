@@ -15,7 +15,7 @@ A minimal cognitive training web app for memory and focus using timed tile recal
 
 ## Game Flow
 1. User selects a difficulty mode and taps Start Training.
-2. App reveals a pattern in blue tiles for 3 seconds.
+2. App reveals a pattern in blue tiles for 1 second.
 3. User recalls and taps tiles.
 4. Correct taps are tracked; wrong taps increase mistakes.
 5. At 3 mistakes, app enters a review phase showing the full answer.
@@ -57,7 +57,7 @@ type GameState = {
 - Rounded corners and minimal motion
 
 ## Success Criteria
-- Reveal remains visible for full 3 seconds.
+- Reveal remains visible for full 1 second.
 - Round transitions are stable and no stale timer leaks.
 - Review blink remains visible for full 1 second after max mistakes.
 - Mobile layout is usable without clipped core controls.

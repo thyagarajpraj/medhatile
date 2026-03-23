@@ -27,7 +27,7 @@
 
 4. Game engine behavior
 - Ensure phase flow: `idle -> reveal -> recall -> review`.
-- Reveal duration must be exactly 3000ms.
+- Reveal duration must be exactly 1000ms.
 - Mistake limit must remain 3.
 - On round success, increment score and start next level in same selected mode.
 

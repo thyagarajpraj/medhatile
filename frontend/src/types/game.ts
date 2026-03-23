@@ -1,4 +1,4 @@
-export type Phase = "idle" | "reveal" | "recall" | "review" | "gameover";
+export type Phase = "idle" | "reveal" | "recall" | "review";
 
 export type DifficultyMode = "easy" | "medium" | "hard";
 

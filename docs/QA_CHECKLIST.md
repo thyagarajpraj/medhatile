@@ -5,7 +5,7 @@
 - In development mode, top navigation includes a `Movies` link.
 - In development mode, visiting `/movies` shows movies section UI.
 - In production mode, header/nav is hidden and only game view is shown.
-- Reveal phase lasts 3 seconds and shows only pattern tiles in blue.
+- Reveal phase lasts 1 second and shows only pattern tiles in blue.
 - Recall accepts clicks only in recall phase.
 - Wrong clicks increase mistake count.
 - Third mistake switches phase to review.

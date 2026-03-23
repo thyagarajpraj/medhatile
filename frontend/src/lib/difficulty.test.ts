@@ -1,4 +1,3 @@
-import { describe, expect, it } from "vitest";
 import { DIFFICULTY_MODES, getDifficultyConfig } from "./difficulty";
 
 describe("difficulty config", () => {

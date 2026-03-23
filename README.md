@@ -23,13 +23,14 @@ This repo uses a split architecture (`frontend` + `backend`).
   - Easy: 4x4, starts at 3 tiles
   - Medium: 6x6, starts at 4 tiles
   - Hard: 8x8, starts at 5 tiles
-- Reveal phase for 3 seconds
+- Reveal phase for 1 second
 - Recall phase with mistakes tracking
 - Review phase showing:
   - Clicked correct (`OK`)
   - Missed correct (`.`)
   - Wrong click (`X`)
 - 3 mistakes trigger 1-second answer blink and same-round restart
+- Back to Start control returns to the start screen during gameplay
 - Best score persisted in localStorage (`medhatile_best_score`)
 - Movies section connected to MongoDB `sample_mflix.movies` with:
   - list and title search

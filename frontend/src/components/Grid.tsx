@@ -7,6 +7,7 @@ type GridProps = {
   userSelections: number[];
   wrongSelections: number[];
   phase: Phase;
+  blinkReveal?: boolean;
   blinkAnswers?: boolean;
   onTileClick: (index: number) => void;
 };
@@ -20,6 +21,7 @@ export function Grid({
   userSelections,
   wrongSelections,
   phase,
+  blinkReveal = false,
   blinkAnswers = false,
   onTileClick,
 }: GridProps) {
@@ -58,7 +60,9 @@ export function Grid({
       <div className={`grid aspect-square w-full ${gapClass}`} style={{ gridTemplateColumns: `repeat(${gridSize}, minmax(0, 1fr))` }}>
         {Array.from({ length: totalTiles }).map((_, index) => {
           const tileState = getState(index);
-          const shouldBlink = blinkAnswers && (tileState === "answer" || tileState === "selected_correct");
+          const shouldBlink =
+            (blinkReveal && tileState === "reveal") ||
+            (blinkAnswers && (tileState === "answer" || tileState === "selected_correct"));
 
           return (
             <Tile

@@ -15,7 +15,6 @@ const phaseLabelMap: Record<Phase, string> = {
   reveal: "Observe",
   recall: "Recall",
   review: "Answer",
-  gameover: "Game Over",
 };
 
 /**
