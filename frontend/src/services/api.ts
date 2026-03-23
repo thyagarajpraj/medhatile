@@ -1,6 +1,9 @@
 import { buildApiUrl } from "../config/api";
 import type { LevelConfig } from "../types/game";
 
+/**
+ * Extracts a backend error message when present and falls back to a generic error.
+ */
 async function parseError(response: Response, fallback: string): Promise<Error> {
   try {
     const payload = (await response.json()) as { error?: string };

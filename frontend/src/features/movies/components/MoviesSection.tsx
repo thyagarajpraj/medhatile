@@ -42,6 +42,9 @@ const emptyFormState: MovieFormState = {
   genres: "",
 };
 
+/**
+ * Removes duplicate movie entries by Mongo id while preserving the latest item.
+ */
 function dedupeMoviesById(movies: Movie[]): Movie[] {
   const map = new Map<string, Movie>();
   for (const movie of movies) {
@@ -50,6 +53,9 @@ function dedupeMoviesById(movies: Movie[]): Movie[] {
   return Array.from(map.values());
 }
 
+/**
+ * Converts a movie document into the editor form state.
+ */
 function toFormState(movie: Movie): MovieFormState {
   return {
     title: movie.title ?? "",
@@ -59,6 +65,9 @@ function toFormState(movie: Movie): MovieFormState {
   };
 }
 
+/**
+ * Builds a validated API payload from the movie editor form values.
+ */
 function buildPayload(form: MovieFormState): MoviePayload {
   const title = form.title.trim();
   if (!title) {
@@ -92,6 +101,9 @@ function buildPayload(form: MovieFormState): MoviePayload {
   return payload;
 }
 
+/**
+ * Converts unknown thrown values into a user-facing error message.
+ */
 function getErrorMessage(error: unknown, fallback: string): string {
   if (error instanceof Error) {
     return error.message;
@@ -99,6 +111,9 @@ function getErrorMessage(error: unknown, fallback: string): string {
   return fallback;
 }
 
+/**
+ * Renders the development-only movies CRUD screen.
+ */
 export function MoviesSection() {
   const queryClient = useQueryClient();
 
@@ -222,6 +237,9 @@ export function MoviesSection() {
     setFormState(toFormState(selectedMovieQuery.data));
   }, [selectedMovieQuery.data]);
 
+  /**
+   * Applies a title filter and resets list selection state for a new search.
+   */
   const applySearch = useCallback(
     (rawQuery: string) => {
       const query = rawQuery.trim();
@@ -242,6 +260,9 @@ export function MoviesSection() {
     [search],
   );
 
+  /**
+   * Submits the current search input or refreshes the existing search results.
+   */
   const handleSearchSubmit = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
@@ -255,6 +276,9 @@ export function MoviesSection() {
     [applySearch, moviesListQuery, search, searchInput],
   );
 
+  /**
+   * Debounces search input changes before applying a new query.
+   */
   useEffect(() => {
     const trimmedSearchInput = searchInput.trim();
     if (trimmedSearchInput === search) {
@@ -270,6 +294,9 @@ export function MoviesSection() {
     };
   }, [applySearch, search, searchInput]);
 
+  /**
+   * Fetches the next movies page when pagination can continue.
+   */
   const loadNextPage = useCallback(() => {
     if (!moviesListQuery.hasNextPage || moviesListQuery.isFetchingNextPage || isPagingTransition) {
       return;
@@ -277,6 +304,9 @@ export function MoviesSection() {
     void moviesListQuery.fetchNextPage();
   }, [isPagingTransition, moviesListQuery]);
 
+  /**
+   * Loads a selected movie into the editor panel.
+   */
   const handleSelectMovie = useCallback((movieId: string) => {
     setErrorMessage(null);
     setStatusMessage(null);
@@ -284,10 +314,16 @@ export function MoviesSection() {
     setFormState(emptyFormState);
   }, []);
 
+  /**
+   * Updates a single movie form field.
+   */
   const handleFormChange = useCallback((key: keyof MovieFormState, value: string) => {
     setFormState((currentValue) => ({ ...currentValue, [key]: value }));
   }, []);
 
+  /**
+   * Tracks list scrolling and preloads the next page near the bottom.
+   */
   const handleListScroll = useCallback(
     (event: UIEvent<HTMLDivElement>) => {
       const container = event.currentTarget;
@@ -304,6 +340,9 @@ export function MoviesSection() {
     [loadNextPage],
   );
 
+  /**
+   * Clears the current movie selection and restores an empty editor form.
+   */
   const clearSelection = useCallback(() => {
     setSelectedMovieId(null);
     setFormState(emptyFormState);
@@ -312,6 +351,9 @@ export function MoviesSection() {
     });
   }, []);
 
+  /**
+   * Creates a new movie using the current editor values.
+   */
   const handleCreate = useCallback(async () => {
     setErrorMessage(null);
     setStatusMessage(null);
@@ -332,6 +374,9 @@ export function MoviesSection() {
     }
   }, [clearSelection, createMovieMutation, formState, queryClient]);
 
+  /**
+   * Updates the selected movie with the current editor values.
+   */
   const handleUpdate = useCallback(async () => {
     if (!selectedMovieId) {
       setErrorMessage("Select a movie before updating");
@@ -353,6 +398,9 @@ export function MoviesSection() {
     }
   }, [formState, queryClient, selectedMovieId, updateMovieMutation]);
 
+  /**
+   * Deletes the currently selected movie from the collection.
+   */
   const handleDelete = useCallback(async () => {
     if (!selectedMovieId) {
       setErrorMessage("Select a movie before deleting");

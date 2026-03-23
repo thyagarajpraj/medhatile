@@ -3,6 +3,9 @@ import type { Movie, MovieListResponse, MoviePayload, MovieUpdatePayload } from 
 
 export const MOVIES_API_BASE_URL = API_BASE_URL;
 
+/**
+ * Extracts an error message from a failed movies API response when available.
+ */
 async function parseError(response: Response, fallback: string): Promise<Error> {
   try {
     const payload = (await response.json()) as { error?: string };
@@ -16,6 +19,9 @@ async function parseError(response: Response, fallback: string): Promise<Error> 
   return new Error(fallback);
 }
 
+/**
+ * Fetches a paginated list of movies using the optional query filters.
+ */
 export async function fetchMoviesFromApi(params?: {
   page?: number;
   limit?: number;
@@ -58,6 +64,9 @@ export async function fetchMoviesFromApi(params?: {
   return payload;
 }
 
+/**
+ * Fetches a single movie document by id.
+ */
 export async function fetchMovieByIdFromApi(id: string): Promise<Movie> {
   const endpoint = buildApiUrl(`/movies/${id}`);
   if (import.meta.env.DEV) {
@@ -77,6 +86,9 @@ export async function fetchMovieByIdFromApi(id: string): Promise<Movie> {
   return payload.movie;
 }
 
+/**
+ * Creates a movie through the backend API and returns the saved document.
+ */
 export async function createMovieFromApi(payload: MoviePayload): Promise<Movie> {
   const endpoint = buildApiUrl("/movies");
   if (import.meta.env.DEV) {
@@ -100,6 +112,9 @@ export async function createMovieFromApi(payload: MoviePayload): Promise<Movie> 
   return body.movie;
 }
 
+/**
+ * Updates a movie by id and returns the persisted document snapshot.
+ */
 export async function updateMovieFromApi(id: string, payload: MovieUpdatePayload): Promise<Movie> {
   const endpoint = buildApiUrl(`/movies/${id}`);
   if (import.meta.env.DEV) {
@@ -123,6 +138,9 @@ export async function updateMovieFromApi(id: string, payload: MovieUpdatePayload
   return body.movie;
 }
 
+/**
+ * Deletes a movie by id.
+ */
 export async function deleteMovieFromApi(id: string): Promise<void> {
   const endpoint = buildApiUrl(`/movies/${id}`);
   if (import.meta.env.DEV) {

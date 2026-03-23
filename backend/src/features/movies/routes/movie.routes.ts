@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, type NextFunction, type Request, type Response } from "express";
 import {
   createMovie,
   deleteMovie,
@@ -9,10 +9,15 @@ import {
 
 export const movieRoutes = Router();
 
-movieRoutes.use((req, _res, next) => {
+/**
+ * Logs movies-router activity for quick local debugging.
+ */
+const logMovieRouterTraffic = (req: Request, _res: Response, next: NextFunction): void => {
   console.log(`MOVIES ROUTER ${req.method} base=${req.baseUrl} path=${req.path}`);
   next();
-});
+};
+
+movieRoutes.use(logMovieRouterTraffic);
 
 movieRoutes.get("/", listMovies);
 movieRoutes.get("/:id", getMovieById);

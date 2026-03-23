@@ -1,9 +1,13 @@
 import cors from "cors";
-import express, { type Request, type Response } from "express";
+import express, { type NextFunction, type Request, type Response } from "express";
 import { movieRoutes } from "./features/movies/routes/movie.routes";
 import gameRoutes from "./routes/game.routes";
 
 const app = express();
+
+/**
+ * Returns whether verbose HTTP request logging is enabled.
+ */
 const isHttpDebugEnabled = (): boolean => process.env.DEBUG_HTTP === "true";
 
 const rawOrigins = process.env.FRONTEND_ORIGIN ?? "";
@@ -20,16 +24,22 @@ app.use(
 
 app.use(express.json());
 
-app.use((req, _res, next) => {
+/**
+ * Logs inbound requests when debug logging is enabled.
+ */
+const logHttpDebug = (req: Request, _res: Response, next: NextFunction): void => {
   if (isHttpDebugEnabled()) {
     const origin = req.headers.origin || "-";
     const referer = req.headers.referer || "-";
     console.log(`[http-debug] ${req.method} ${req.originalUrl} origin=${origin} referer=${referer}`);
   }
   next();
-});
+};
 
-app.use((req, res, next) => {
+/**
+ * Logs request and response timing for movies API traffic.
+ */
+const logMovieRequests = (req: Request, res: Response, next: NextFunction): void => {
   if (!req.originalUrl.startsWith("/api/movies")) {
     next();
     return;
@@ -44,21 +54,38 @@ app.use((req, res, next) => {
   });
 
   next();
-});
+};
 
-app.get("/health", (_req: Request, res: Response) => {
+/**
+ * Returns a plain-text process health check response.
+ */
+const handleHealth = (_req: Request, res: Response): void => {
   res.status(200).send("OK");
-});
+};
 
-app.get("/api/health", (_req: Request, res: Response) => {
+/**
+ * Returns a JSON health payload for API callers.
+ */
+const handleApiHealth = (_req: Request, res: Response): void => {
   res.status(200).json({ status: "ok" });
-});
+};
+
+/**
+ * Returns a JSON 404 payload for unknown routes.
+ */
+const handleNotFound = (_req: Request, res: Response): void => {
+  res.status(404).json({ error: "Route not found" });
+};
+
+app.use(logHttpDebug);
+app.use(logMovieRequests);
+
+app.get("/health", handleHealth);
+app.get("/api/health", handleApiHealth);
 
 app.use("/api/game", gameRoutes);
 app.use("/api/movies", movieRoutes);
 
-app.use((_req: Request, res: Response) => {
-  res.status(404).json({ error: "Route not found" });
-});
+app.use(handleNotFound);
 
 export default app;

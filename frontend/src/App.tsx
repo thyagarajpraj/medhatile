@@ -6,6 +6,9 @@ import { MoviesSection } from "./features/movies/components/MoviesSection";
 
 type AppRoute = "/" | "/movies";
 
+/**
+ * Resolves the active frontend route while honoring the production-only game view.
+ */
 function resolveRoute(pathname: string): AppRoute {
   if (!isDev) {
     return "/";
@@ -15,6 +18,9 @@ function resolveRoute(pathname: string): AppRoute {
   return normalizedPath.startsWith("/movies") ? "/movies" : "/";
 }
 
+/**
+ * Renders the top-level app shell and development-only route navigation.
+ */
 function App() {
   const [currentRoute, setCurrentRoute] = useState<AppRoute>(() => resolveRoute(window.location.pathname));
 
@@ -30,6 +36,9 @@ function App() {
     );
   }, []);
 
+  /**
+   * Navigates between the game and movies views in development mode.
+   */
   const navigate = (to: AppRoute) => {
     if (!isDev) {
       return;

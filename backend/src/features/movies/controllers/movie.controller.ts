@@ -15,10 +15,16 @@ type ParseResult =
 
 const MIN_YEAR = 1888;
 
+/**
+ * Escapes regex metacharacters in a user-provided title filter.
+ */
 function escapeRegex(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+/**
+ * Parses a positive integer and falls back when the input is invalid.
+ */
 function parsePositiveInt(value: unknown, fallback: number): number {
   const parsed = Number(value);
   if (!Number.isInteger(parsed) || parsed <= 0) {
@@ -27,6 +33,9 @@ function parsePositiveInt(value: unknown, fallback: number): number {
   return parsed;
 }
 
+/**
+ * Normalizes movie genres from either a string or string-array request value.
+ */
 function parseGenres(value: unknown): string[] | null {
   if (value === undefined) {
     return [];
@@ -46,6 +55,9 @@ function parseGenres(value: unknown): string[] | null {
   return null;
 }
 
+/**
+ * Validates and normalizes movie create and update payloads.
+ */
 function parseMoviePayload(body: unknown, requireTitle: boolean): ParseResult {
   if (!body || typeof body !== "object") {
     return { ok: false, error: "Invalid request body" };
@@ -93,6 +105,9 @@ function parseMoviePayload(body: unknown, requireTitle: boolean): ParseResult {
   return { ok: true, value: payload };
 }
 
+/**
+ * Lists movies with pagination and optional title filtering.
+ */
 export const listMovies = async (req: Request, res: Response): Promise<void> => {
   const page = parsePositiveInt(req.query.page, 1);
   const limit = Math.min(parsePositiveInt(req.query.limit, 12), 50);
@@ -116,6 +131,9 @@ export const listMovies = async (req: Request, res: Response): Promise<void> => 
   }
 };
 
+/**
+ * Loads a single movie by id.
+ */
 export const getMovieById = async (req: Request, res: Response): Promise<void> => {
   const idParam = req.params.id;
   const id = Array.isArray(idParam) ? idParam[0] : idParam;
@@ -143,6 +161,9 @@ export const getMovieById = async (req: Request, res: Response): Promise<void> =
   }
 };
 
+/**
+ * Creates a movie after validating the request body.
+ */
 export const createMovie = async (req: Request, res: Response): Promise<void> => {
   const parsed = parseMoviePayload(req.body, true);
   if (!parsed.ok) {
@@ -159,6 +180,9 @@ export const createMovie = async (req: Request, res: Response): Promise<void> =>
   }
 };
 
+/**
+ * Updates a movie document by id.
+ */
 export const updateMovie = async (req: Request, res: Response): Promise<void> => {
   const idParam = req.params.id;
   const id = Array.isArray(idParam) ? idParam[0] : idParam;
@@ -198,6 +222,9 @@ export const updateMovie = async (req: Request, res: Response): Promise<void> =>
   }
 };
 
+/**
+ * Deletes a movie by id.
+ */
 export const deleteMovie = async (req: Request, res: Response): Promise<void> => {
   const idParam = req.params.id;
   const id = Array.isArray(idParam) ? idParam[0] : idParam;

@@ -4,6 +4,9 @@ import { connectDB } from "./config/db";
 
 const PORT = Number(process.env.PORT) || 5000;
 
+/**
+ * Connects dependencies and starts the HTTP server.
+ */
 async function startServer(): Promise<void> {
   try {
     await connectDB();
