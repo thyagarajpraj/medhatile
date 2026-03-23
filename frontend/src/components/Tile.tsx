@@ -13,7 +13,7 @@ const stateClassMap: Record<TileState, string> = {
   reveal: "border-sky-600 bg-sky-500",
   selected_correct: "border-sky-700 bg-sky-500 ring-2 ring-sky-300",
   answer: "border-violet-500 bg-violet-50 ring-2 ring-violet-300",
-  wrong: "border-rose-500 bg-rose-50 ring-2 ring-rose-300",
+  wrong: "border-rose-700 bg-rose-500 ring-2 ring-rose-300",
 };
 
 const stateMarkerMap: Partial<Record<TileState, string>> = {
@@ -25,7 +25,7 @@ const stateMarkerMap: Partial<Record<TileState, string>> = {
 const markerClassMap: Partial<Record<TileState, string>> = {
   selected_correct: "text-white",
   answer: "text-violet-700",
-  wrong: "text-rose-700",
+  wrong: "text-white",
 };
 
 /**

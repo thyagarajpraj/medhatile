@@ -246,45 +246,37 @@ export function GameSection() {
    */
   const handleTileClick = useCallback(
     (tileIndex: number) => {
-      let wrongSelection: number | null = null;
-
-      setGameState((prev) => {
-        if (prev.phase !== "recall") {
-          return prev;
-        }
-
-        if (prev.userSelections.includes(tileIndex) || wrongSelections.includes(tileIndex)) {
-          return prev;
-        }
-
-        const isCorrect = prev.pattern.includes(tileIndex);
-        if (isCorrect) {
-          const updatedSelections = [...prev.userSelections, tileIndex];
-          const hasCompletedRound = updatedSelections.length === prev.pattern.length;
-
-          return {
-            ...prev,
-            userSelections: updatedSelections,
-            phase: hasCompletedRound ? "idle" : prev.phase,
-          };
-        }
-
-        const nextMistakes = prev.mistakes + 1;
-        wrongSelection = tileIndex;
-
-        if (nextMistakes >= MAX_MISTAKES) {
-          return { ...prev, mistakes: nextMistakes, phase: "review" };
-        }
-
-        return { ...prev, mistakes: nextMistakes };
-      });
-
-      if (wrongSelection !== null) {
-        const wrongTile = wrongSelection;
-        setWrongSelections((currentWrong) => [...currentWrong, wrongTile]);
+      if (gameState.phase !== "recall") {
+        return;
       }
+
+      if (gameState.userSelections.includes(tileIndex) || wrongSelections.includes(tileIndex)) {
+        return;
+      }
+
+      const isCorrect = gameState.pattern.includes(tileIndex);
+      if (isCorrect) {
+        const updatedSelections = [...gameState.userSelections, tileIndex];
+        const hasCompletedRound = updatedSelections.length === gameState.pattern.length;
+
+        setGameState({
+          ...gameState,
+          userSelections: updatedSelections,
+          phase: hasCompletedRound ? "idle" : gameState.phase,
+        });
+        return;
+      }
+
+      const nextMistakes = gameState.mistakes + 1;
+      setWrongSelections((currentWrong) => [...currentWrong, tileIndex]);
+
+      setGameState({
+        ...gameState,
+        mistakes: nextMistakes,
+        phase: nextMistakes >= MAX_MISTAKES ? "review" : gameState.phase,
+      });
     },
-    [wrongSelections],
+    [gameState, wrongSelections],
   );
 
   /**
@@ -397,7 +389,8 @@ export function GameSection() {
 
   const totalBlueTiles = gameState.pattern.length > 0 ? gameState.pattern.length : gameState.tilesToRemember;
   const correctTiles = gameState.userSelections.length;
-  const remainingTiles = Math.max(totalBlueTiles - correctTiles, 0);
+  const attemptedTiles = new Set([...gameState.userSelections, ...wrongSelections]).size;
+  const remainingTiles = Math.max(totalBlueTiles - attemptedTiles, 0);
 
   return (
     <>

@@ -135,4 +135,22 @@ describe("GameSection", () => {
   },
     10000,
   );
+
+  it(
+    "highlights wrong tiles and decreases remaining count on wrong attempts",
+    async () => {
+    vi.mocked(globalThis.fetch).mockResolvedValue(createPatternResponse([0, 1, 2]));
+
+    await startTraining();
+
+    await waitForDuration(1100);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Tile 1" })).not.toBeDisabled());
+
+    fireEvent.click(screen.getByRole("button", { name: "Tile 5" }));
+
+    await waitFor(() => expect(screen.getByRole("button", { name: "Tile 5" })).toHaveTextContent("X"));
+    expect(screen.getByText("Remaining: 2")).toBeInTheDocument();
+  },
+    10000,
+  );
 });
