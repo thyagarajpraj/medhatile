@@ -389,8 +389,7 @@ export function GameSection() {
 
   const totalBlueTiles = gameState.pattern.length > 0 ? gameState.pattern.length : gameState.tilesToRemember;
   const correctTiles = gameState.userSelections.length;
-  const attemptedTiles = new Set([...gameState.userSelections, ...wrongSelections]).size;
-  const remainingTiles = Math.max(totalBlueTiles - attemptedTiles, 0);
+  const remainingTiles = Math.max(totalBlueTiles - correctTiles, 0);
 
   return (
     <>

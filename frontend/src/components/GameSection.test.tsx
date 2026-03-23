@@ -137,7 +137,7 @@ describe("GameSection", () => {
   );
 
   it(
-    "highlights wrong tiles and decreases remaining count on wrong attempts",
+    "highlights wrong tiles without changing remaining count",
     async () => {
     vi.mocked(globalThis.fetch).mockResolvedValue(createPatternResponse([0, 1, 2]));
 
@@ -149,7 +149,7 @@ describe("GameSection", () => {
     fireEvent.click(screen.getByRole("button", { name: "Tile 5" }));
 
     await waitFor(() => expect(screen.getByRole("button", { name: "Tile 5" })).toHaveTextContent("X"));
-    expect(screen.getByText("Remaining: 2")).toBeInTheDocument();
+    expect(screen.getByText("Remaining: 3")).toBeInTheDocument();
   },
     10000,
   );
