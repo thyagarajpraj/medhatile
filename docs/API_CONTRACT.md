@@ -2,6 +2,69 @@
 
 Base URL (local): `http://127.0.0.1:5000/api`
 
+Auth:
+- Protected routes require `Authorization: Bearer <token>`.
+- Only `GET /health` and `GET /api/health` remain public.
+
+## POST /api/auth/register
+Request:
+```json
+{ "email": "user@example.com", "password": "password123" }
+```
+
+Response:
+```json
+{
+  "token": "jwt-token",
+  "user": {
+    "id": "user-id",
+    "email": "user@example.com",
+    "bestScore": 0
+  }
+}
+```
+
+Validation:
+- `email` must be valid.
+- `password` must be at least 8 characters.
+- Duplicate emails return `409`.
+
+## POST /api/auth/login
+Request:
+```json
+{ "email": "user@example.com", "password": "password123" }
+```
+
+Response:
+```json
+{
+  "token": "jwt-token",
+  "user": {
+    "id": "user-id",
+    "email": "user@example.com",
+    "bestScore": 7
+  }
+}
+```
+
+Validation and errors:
+- Invalid credentials return `401`.
+
+## GET /api/auth/me
+Response:
+```json
+{
+  "user": {
+    "id": "user-id",
+    "email": "user@example.com",
+    "bestScore": 7
+  }
+}
+```
+
+Validation and errors:
+- Missing or invalid token returns `401`.
+
 ## GET /health
 Response body:
 ```txt
@@ -28,6 +91,9 @@ Response:
 }
 ```
 
+Validation:
+- Requires a valid bearer token.
+
 ## GET /api/game/config
 Response:
 ```json
@@ -36,6 +102,7 @@ Response:
 
 Validation:
 - `roundsPerLevel` is a positive integer controlled by backend env (`ROUNDS_PER_LEVEL`).
+- Requires a valid bearer token.
 
 ## GET /api/game/pattern
 Request:
@@ -49,6 +116,7 @@ Response:
 ```
 
 Validation:
+- Requires a valid bearer token.
 - `gridSize` must be a positive integer.
 - `count` must be a positive integer.
 - `count <= gridSize * gridSize`.
@@ -67,17 +135,33 @@ Request:
 
 Success response:
 ```json
-{ "success": true, "message": "Score received" }
+{ "success": true, "message": "Score received", "bestScore": 7 }
 ```
 
 Validation:
 - `score` must be an integer >= 0.
 - `level` must be an integer > 0.
+- Requires a valid bearer token.
 
 Error response shape:
 ```json
 { "success": false, "message": "Invalid score payload" }
 ```
+
+## POST /api/game/best-score/sync
+Request:
+```json
+{ "bestScore": 7 }
+```
+
+Response:
+```json
+{ "success": true, "bestScore": 7 }
+```
+
+Validation:
+- `bestScore` must be an integer >= 0.
+- Requires a valid bearer token.
 
 ## Movies CRUD
 Base paths:
@@ -108,6 +192,9 @@ Response:
 }
 ```
 
+Validation:
+- Requires a valid bearer token.
+
 ### GET /api/movies/:id
 Response:
 ```json
@@ -121,6 +208,9 @@ Response:
   }
 }
 ```
+
+Validation:
+- Requires a valid bearer token.
 
 ### POST /api/movies
 Request:
@@ -136,6 +226,9 @@ Request:
 Response:
 - `201` with `{ "movie": { ... } }`
 
+Validation:
+- Requires a valid bearer token.
+
 ### PUT /api/movies/:id
 Request:
 ```json
@@ -148,6 +241,9 @@ Request:
 Response:
 - `200` with `{ "movie": { ...updated fields... } }`
 
+Validation:
+- Requires a valid bearer token.
+
 ### DELETE /api/movies/:id
 Response:
 ```json
@@ -155,5 +251,6 @@ Response:
 ```
 
 Validation and errors:
+- Requires a valid bearer token.
 - Invalid `:id` returns `400` with `{ "error": "Invalid movie id" }`
 - Missing resource returns `404` with `{ "error": "Movie not found" }`

@@ -1,21 +1,6 @@
 import { buildApiUrl } from "../config/api";
+import { buildRequestHeaders, parseApiError } from "../lib/http";
 import type { LevelConfig } from "../types/game";
-
-/**
- * Extracts a backend error message when present and falls back to a generic error.
- */
-async function parseError(response: Response, fallback: string): Promise<Error> {
-  try {
-    const payload = (await response.json()) as { error?: string };
-    if (payload.error) {
-      return new Error(payload.error);
-    }
-  } catch {
-    // Ignore parse failures and use fallback.
-  }
-
-  return new Error(fallback);
-}
 
 /**
  * Represents backend-controlled game config values.
@@ -25,13 +10,32 @@ export type GameConfig = {
 };
 
 /**
+ * Represents the best-score sync response returned by the backend.
+ */
+export type BestScoreSyncResponse = {
+  success: true;
+  bestScore: number;
+};
+
+/**
+ * Represents the score-submit response returned by the backend.
+ */
+export type ScoreSubmitResponse = {
+  success: true;
+  message: string;
+  bestScore: number;
+};
+
+/**
  * Fetches runtime game configuration from backend.
  */
-export async function fetchGameConfigFromApi(): Promise<GameConfig> {
-  const response = await fetch(buildApiUrl("/game/config"));
+export async function fetchGameConfigFromApi(authToken?: string): Promise<GameConfig> {
+  const response = await fetch(buildApiUrl("/game/config"), {
+    headers: buildRequestHeaders(authToken),
+  });
 
   if (!response.ok) {
-    throw new Error("Failed to fetch game config");
+    throw await parseApiError(response, "Failed to fetch game config");
   }
 
   const payload = (await response.json()) as { roundsPerLevel?: number };
@@ -47,11 +51,13 @@ export async function fetchGameConfigFromApi(): Promise<GameConfig> {
  * Fetches difficulty levels from backend.
  * Falls back handling is done by caller.
  */
-export async function fetchLevelsFromApi(): Promise<LevelConfig[]> {
-  const response = await fetch(buildApiUrl("/game/levels"));
+export async function fetchLevelsFromApi(authToken?: string): Promise<LevelConfig[]> {
+  const response = await fetch(buildApiUrl("/game/levels"), {
+    headers: buildRequestHeaders(authToken),
+  });
 
   if (!response.ok) {
-    throw await parseError(response, "Failed to fetch levels");
+    throw await parseApiError(response, "Failed to fetch levels");
   }
 
   const payload = (await response.json()) as { levels?: LevelConfig[] };
@@ -66,16 +72,21 @@ export async function fetchLevelsFromApi(): Promise<LevelConfig[]> {
 /**
  * Requests a random unique tile pattern for a given grid size and tile count.
  */
-export async function fetchPatternFromApi(gridSize: number, count: number): Promise<number[]> {
+export async function fetchPatternFromApi(gridSize: number, count: number, authToken?: string): Promise<number[]> {
   const params = new URLSearchParams({
     gridSize: String(gridSize),
     count: String(count),
   });
 
-  const response = await fetch(`${buildApiUrl("/game/pattern")}?${params.toString()}`);
+  const endpoint = `${buildApiUrl("/game/pattern")}?${params.toString()}`;
+  const response = authToken
+    ? await fetch(endpoint, {
+        headers: buildRequestHeaders(authToken),
+      })
+    : await fetch(endpoint);
 
   if (!response.ok) {
-    throw await parseError(response, "Failed to fetch pattern");
+    throw await parseApiError(response, "Failed to fetch pattern");
   }
 
   const payload = (await response.json()) as { pattern?: number[] };
@@ -90,16 +101,50 @@ export async function fetchPatternFromApi(gridSize: number, count: number): Prom
 /**
  * Submits a completed run snapshot to backend for future persistence/analytics.
  */
-export async function submitScoreToApi(score: number, level: number): Promise<void> {
+export async function submitScoreToApi(score: number, level: number, authToken?: string): Promise<ScoreSubmitResponse> {
   const response = await fetch(buildApiUrl("/game/submit"), {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: buildRequestHeaders(authToken, true),
     body: JSON.stringify({ score, level }),
   });
 
   if (!response.ok) {
-    throw new Error("Failed to submit score");
+    throw await parseApiError(response, "Failed to submit score");
   }
+
+  const payload = (await response.json()) as Partial<ScoreSubmitResponse>;
+  if (payload.success !== true || typeof payload.bestScore !== "number") {
+    throw new Error("Invalid score submit payload");
+  }
+
+  return {
+    success: true,
+    message: typeof payload.message === "string" ? payload.message : "Score received",
+    bestScore: payload.bestScore,
+  };
+}
+
+/**
+ * Syncs the locally stored best score into the authenticated account.
+ */
+export async function syncBestScoreToApi(bestScore: number, authToken: string): Promise<BestScoreSyncResponse> {
+  const response = await fetch(buildApiUrl("/game/best-score/sync"), {
+    method: "POST",
+    headers: buildRequestHeaders(authToken, true),
+    body: JSON.stringify({ bestScore }),
+  });
+
+  if (!response.ok) {
+    throw await parseApiError(response, "Failed to sync best score");
+  }
+
+  const payload = (await response.json()) as Partial<BestScoreSyncResponse>;
+  if (payload.success !== true || typeof payload.bestScore !== "number") {
+    throw new Error("Invalid best score sync payload");
+  }
+
+  return {
+    success: true,
+    bestScore: payload.bestScore,
+  };
 }

@@ -12,7 +12,8 @@ MedhaTile is a cognitive training game focused on:
 This repo uses a split architecture (`frontend` + `backend`).
 
 ## Features
-- Start screen with best score
+- Mobile-friendly sign in / register gate before app access
+- Best score persisted in localStorage and synced per signed-in account
 - Development-only app navigation links:
   - `Game` -> `/`
   - `Movies` -> `/movies`
@@ -37,6 +38,7 @@ This repo uses a split architecture (`frontend` + `backend`).
   - create movie
   - update movie
   - delete movie
+- Email/password auth with bearer-token sessions
 
 ## Stack
 - Frontend: React + Vite + TypeScript + Tailwind CSS
@@ -60,6 +62,7 @@ medhatile/
 |-- backend/
 |   |-- src/
 |   |   |-- features/
+|   |   |   |-- auth/
 |   |   |   `-- movies/
 |   |   |       |-- controllers/
 |   |   |       |-- models/
@@ -90,6 +93,7 @@ copy frontend\.env.example frontend\.env
 ```
 Default env values:
 - `backend/.env`: `PORT=5000`, `FRONTEND_ORIGIN=http://localhost:5173`, `ROUNDS_PER_LEVEL=5`
+- `backend/.env`: add `JWT_SECRET` and `JWT_EXPIRES_IN_HOURS` for auth sessions
 - `frontend/.env.development`: `VITE_API_BASE_URL=http://127.0.0.1:5000/api`
 - `frontend/.env.production`: `VITE_API_BASE_URL=/api` (override in Vercel with deployed backend URL)
 3. Run backend:
@@ -106,8 +110,9 @@ http://localhost:5173/
 http://localhost:5173/movies
 ```
 Note:
-- `/movies` is available in development.
-- In production, only `/` (game view) is shown by design.
+- The app now shows a login/register gate before either view is available.
+- `/movies` is available in development after sign-in.
+- In production, only `/` (game view) is shown after sign-in.
 
 ## Scripts
 From repo root:

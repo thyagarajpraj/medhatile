@@ -4,14 +4,22 @@
 A minimal cognitive training web app for memory and focus using timed tile recall.
 
 ## App Sections
+- Password auth gate shown before the app shell in all modes
 - `Game` section mounted at `/`
 - `Movies` section mounted at `/movies`
 - Development mode (`import.meta.env.DEV`):
-  - top navigation exposes a visible `Movies` link
+  - top navigation exposes a visible `Movies` link after sign-in
   - switching between `/` and `/movies` happens without full-page refresh
 - Production mode (`import.meta.env.PROD`):
-  - app renders only the game view
+  - app renders only the game view after sign-in
   - top navigation/header is hidden
+
+## Authentication
+- Email/password registration and sign-in are required before app access.
+- Register screen includes `Confirm Password` and blocks submit when it does not match.
+- Session is stored in localStorage and restored on reload when valid.
+- All non-health app APIs require a bearer token.
+- Best score remains in localStorage and syncs to the signed-in account, using the higher value for display.
 
 ## Game Flow
 1. User selects a difficulty mode and taps Start Training.
@@ -61,9 +69,10 @@ type GameState = {
 - Round transitions are stable and no stale timer leaks.
 - Review blink remains visible for full 1 second after max mistakes.
 - Mobile layout is usable without clipped core controls.
+- Login/register gate is usable on mobile widths without clipped inputs or buttons.
 - In mobile gameplay layout, tile stats/answer panel is rendered below the tile board.
 - Best score survives page reload.
-- In development mode, `/movies` route loads and can perform list/create/update/delete against backend `/api/movies` endpoints.
+- In development mode, `/movies` route loads after auth and can perform list/create/update/delete against backend `/api/movies` endpoints.
 
 ## Code Documentation
 - All declared functions in frontend/backend source include JSDoc comments.

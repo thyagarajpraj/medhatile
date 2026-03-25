@@ -7,12 +7,16 @@
 2. Backend readiness
 - Start backend: `npm run dev:backend`.
 - Confirm:
+  - `POST /api/auth/register`
+  - `POST /api/auth/login`
+  - `GET /api/auth/me`
   - `GET /health`
   - `GET /api/health`
   - `GET /api/game/levels`
   - `GET /api/game/config`
   - `GET /api/game/pattern?gridSize=<int>&count=<int>`
   - `POST /api/game/submit`
+  - `POST /api/game/best-score/sync`
   - `GET /api/movies`
   - `POST /api/movies`
   - `PUT /api/movies/:id`
@@ -21,9 +25,10 @@
 3. Frontend readiness
 - Start frontend: `npm run dev:frontend`.
 - Verify app boot and API base URL (`VITE_API_BASE_URL`).
+- Verify the auth gate appears before the app shell and register includes `Confirm Password`.
 - Verify navigation routes:
-  - `/` loads game UI.
-  - `/movies` loads movies UI.
+  - `/` loads game UI after sign-in.
+  - `/movies` loads movies UI after sign-in.
 
 4. Game engine behavior
 - Ensure phase flow: `idle -> reveal -> recall -> review`.

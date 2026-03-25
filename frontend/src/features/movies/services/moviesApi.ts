@@ -1,23 +1,8 @@
 import { API_BASE_URL, buildApiUrl } from "../../../config/api";
+import { buildRequestHeaders, parseApiError } from "../../../lib/http";
 import type { Movie, MovieListResponse, MoviePayload, MovieUpdatePayload } from "../types/movie";
 
 export const MOVIES_API_BASE_URL = API_BASE_URL;
-
-/**
- * Extracts an error message from a failed movies API response when available.
- */
-async function parseError(response: Response, fallback: string): Promise<Error> {
-  try {
-    const payload = (await response.json()) as { error?: string };
-    if (payload.error) {
-      return new Error(payload.error);
-    }
-  } catch {
-    // Ignore parse failures and use fallback.
-  }
-
-  return new Error(fallback);
-}
 
 /**
  * Fetches a paginated list of movies using the optional query filters.
@@ -26,7 +11,7 @@ export async function fetchMoviesFromApi(params?: {
   page?: number;
   limit?: number;
   title?: string;
-}): Promise<MovieListResponse> {
+}, authToken?: string): Promise<MovieListResponse> {
   const query = new URLSearchParams();
 
   if (params?.page) {
@@ -46,13 +31,16 @@ export async function fetchMoviesFromApi(params?: {
   if (import.meta.env.DEV) {
     console.log(`[movies-api] GET ${endpoint}`);
   }
-  const response = await fetch(endpoint, { cache: "no-store" });
+  const response = await fetch(endpoint, {
+    cache: "no-store",
+    headers: buildRequestHeaders(authToken),
+  });
   if (import.meta.env.DEV) {
     console.log(`[movies-api] RES ${response.status} ${endpoint}`);
   }
 
   if (!response.ok) {
-    throw await parseError(response, "Failed to fetch movies");
+    throw await parseApiError(response, "Failed to fetch movies");
   }
 
   const payload = (await response.json()) as MovieListResponse;
@@ -67,15 +55,18 @@ export async function fetchMoviesFromApi(params?: {
 /**
  * Fetches a single movie document by id.
  */
-export async function fetchMovieByIdFromApi(id: string): Promise<Movie> {
+export async function fetchMovieByIdFromApi(id: string, authToken?: string): Promise<Movie> {
   const endpoint = buildApiUrl(`/movies/${id}`);
   if (import.meta.env.DEV) {
     console.log(`[movies-api] GET ${endpoint}`);
   }
-  const response = await fetch(endpoint, { cache: "no-store" });
+  const response = await fetch(endpoint, {
+    cache: "no-store",
+    headers: buildRequestHeaders(authToken),
+  });
 
   if (!response.ok) {
-    throw await parseError(response, "Failed to fetch movie");
+    throw await parseApiError(response, "Failed to fetch movie");
   }
 
   const payload = (await response.json()) as { movie?: Movie };
@@ -89,19 +80,19 @@ export async function fetchMovieByIdFromApi(id: string): Promise<Movie> {
 /**
  * Creates a movie through the backend API and returns the saved document.
  */
-export async function createMovieFromApi(payload: MoviePayload): Promise<Movie> {
+export async function createMovieFromApi(payload: MoviePayload, authToken?: string): Promise<Movie> {
   const endpoint = buildApiUrl("/movies");
   if (import.meta.env.DEV) {
     console.log(`[movies-api] POST ${endpoint}`);
   }
   const response = await fetch(endpoint, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: buildRequestHeaders(authToken, true),
     body: JSON.stringify(payload),
   });
 
   if (!response.ok) {
-    throw await parseError(response, "Failed to create movie");
+    throw await parseApiError(response, "Failed to create movie");
   }
 
   const body = (await response.json()) as { movie?: Movie };
@@ -115,19 +106,19 @@ export async function createMovieFromApi(payload: MoviePayload): Promise<Movie> 
 /**
  * Updates a movie by id and returns the persisted document snapshot.
  */
-export async function updateMovieFromApi(id: string, payload: MovieUpdatePayload): Promise<Movie> {
+export async function updateMovieFromApi(id: string, payload: MovieUpdatePayload, authToken?: string): Promise<Movie> {
   const endpoint = buildApiUrl(`/movies/${id}`);
   if (import.meta.env.DEV) {
     console.log(`[movies-api] PUT ${endpoint}`);
   }
   const response = await fetch(endpoint, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: buildRequestHeaders(authToken, true),
     body: JSON.stringify(payload),
   });
 
   if (!response.ok) {
-    throw await parseError(response, "Failed to update movie");
+    throw await parseApiError(response, "Failed to update movie");
   }
 
   const body = (await response.json()) as { movie?: Movie };
@@ -141,16 +132,17 @@ export async function updateMovieFromApi(id: string, payload: MovieUpdatePayload
 /**
  * Deletes a movie by id.
  */
-export async function deleteMovieFromApi(id: string): Promise<void> {
+export async function deleteMovieFromApi(id: string, authToken?: string): Promise<void> {
   const endpoint = buildApiUrl(`/movies/${id}`);
   if (import.meta.env.DEV) {
     console.log(`[movies-api] DELETE ${endpoint}`);
   }
   const response = await fetch(endpoint, {
     method: "DELETE",
+    headers: buildRequestHeaders(authToken),
   });
 
   if (!response.ok) {
-    throw await parseError(response, "Failed to delete movie");
+    throw await parseApiError(response, "Failed to delete movie");
   }
 }

@@ -11,6 +11,7 @@ import {
   useState,
   useTransition,
 } from "react";
+import { ApiError } from "../../../lib/http";
 import {
   MOVIES_API_BASE_URL,
   createMovieFromApi,
@@ -20,6 +21,11 @@ import {
   updateMovieFromApi,
 } from "../services/moviesApi";
 import type { Movie, MoviePayload, MovieUpdatePayload } from "../types/movie";
+
+type MoviesSectionProps = {
+  authToken: string;
+  onUnauthorized: () => void;
+};
 
 type MovieFormState = {
   title: string;
@@ -112,9 +118,16 @@ function getErrorMessage(error: unknown, fallback: string): string {
 }
 
 /**
+ * Returns whether an error represents an unauthorized API response.
+ */
+function isUnauthorizedError(error: unknown): boolean {
+  return error instanceof ApiError && error.status === 401;
+}
+
+/**
  * Renders the development-only movies CRUD screen.
  */
-export function MoviesSection() {
+export function MoviesSection({ authToken, onUnauthorized }: MoviesSectionProps) {
   const queryClient = useQueryClient();
 
   const [listScrollTop, setListScrollTop] = useState(0);
@@ -139,14 +152,14 @@ export function MoviesSection() {
   const isSearchInputPending = deferredSearchInput !== searchInput;
 
   const moviesListQuery = useInfiniteQuery({
-    queryKey: ["movies", search],
+    queryKey: ["movies", authToken, search],
     initialPageParam: 1,
     queryFn: ({ pageParam }) =>
       fetchMoviesFromApi({
         page: pageParam,
         limit: MOVIES_PER_PAGE,
         title: search || undefined,
-      }),
+      }, authToken),
     getNextPageParam: (lastPage) => {
       if (lastPage.page * lastPage.limit >= lastPage.total) {
         return undefined;
@@ -158,23 +171,24 @@ export function MoviesSection() {
   });
 
   const selectedMovieQuery = useQuery({
-    queryKey: ["movie", selectedMovieId],
-    queryFn: () => fetchMovieByIdFromApi(selectedMovieId as string),
+    queryKey: ["movie", authToken, selectedMovieId],
+    queryFn: () => fetchMovieByIdFromApi(selectedMovieId as string, authToken),
     enabled: Boolean(selectedMovieId),
     staleTime: 60_000,
     gcTime: 10 * 60_000,
   });
 
   const createMovieMutation = useMutation({
-    mutationFn: createMovieFromApi,
+    mutationFn: (payload: MoviePayload) => createMovieFromApi(payload, authToken),
   });
 
   const updateMovieMutation = useMutation({
-    mutationFn: ({ id, payload }: { id: string; payload: MovieUpdatePayload }) => updateMovieFromApi(id, payload),
+    mutationFn: ({ id, payload }: { id: string; payload: MovieUpdatePayload }) =>
+      updateMovieFromApi(id, payload, authToken),
   });
 
   const deleteMovieMutation = useMutation({
-    mutationFn: deleteMovieFromApi,
+    mutationFn: (id: string) => deleteMovieFromApi(id, authToken),
   });
 
   const moviesPages = moviesListQuery.data?.pages ?? [];
@@ -236,6 +250,15 @@ export function MoviesSection() {
 
     setFormState(toFormState(selectedMovieQuery.data));
   }, [selectedMovieQuery.data]);
+
+  useEffect(() => {
+    const queryError = moviesListQuery.error ?? selectedMovieQuery.error;
+    if (!isUnauthorizedError(queryError)) {
+      return;
+    }
+
+    onUnauthorized();
+  }, [moviesListQuery.error, onUnauthorized, selectedMovieQuery.error]);
 
   /**
    * Applies a title filter and resets list selection state for a new search.
@@ -370,9 +393,13 @@ export function MoviesSection() {
       queryClient.setQueryData(["movie", createdMovie._id], createdMovie);
       await queryClient.invalidateQueries({ queryKey: ["movies"] });
     } catch (error) {
+      if (isUnauthorizedError(error)) {
+        onUnauthorized();
+        return;
+      }
       setErrorMessage(getErrorMessage(error, "Failed to create movie"));
     }
-  }, [clearSelection, createMovieMutation, formState, queryClient]);
+  }, [clearSelection, createMovieMutation, formState, onUnauthorized, queryClient]);
 
   /**
    * Updates the selected movie with the current editor values.
@@ -394,9 +421,13 @@ export function MoviesSection() {
       queryClient.setQueryData(["movie", updatedMovie._id], updatedMovie);
       await queryClient.invalidateQueries({ queryKey: ["movies"] });
     } catch (error) {
+      if (isUnauthorizedError(error)) {
+        onUnauthorized();
+        return;
+      }
       setErrorMessage(getErrorMessage(error, "Failed to update movie"));
     }
-  }, [formState, queryClient, selectedMovieId, updateMovieMutation]);
+  }, [formState, onUnauthorized, queryClient, selectedMovieId, updateMovieMutation]);
 
   /**
    * Deletes the currently selected movie from the collection.
@@ -418,9 +449,13 @@ export function MoviesSection() {
       queryClient.removeQueries({ queryKey: ["movie", selectedMovieId] });
       await queryClient.invalidateQueries({ queryKey: ["movies"] });
     } catch (error) {
+      if (isUnauthorizedError(error)) {
+        onUnauthorized();
+        return;
+      }
       setErrorMessage(getErrorMessage(error, "Failed to delete movie"));
     }
-  }, [clearSelection, deleteMovieMutation, queryClient, selectedMovieId]);
+  }, [clearSelection, deleteMovieMutation, onUnauthorized, queryClient, selectedMovieId]);
 
   return (
     <section className="mx-auto w-full max-w-6xl rounded-3xl border border-slate-200/90 bg-white/95 p-4 shadow-xl sm:p-6">

@@ -1,8 +1,9 @@
 import { type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DIFFICULTY_MODES, getDifficultyConfig } from "../lib/difficulty";
+import { ApiError } from "../lib/http";
 import { extendPattern } from "../lib/extendPattern";
 import { generatePattern } from "../lib/generatePattern";
-import { fetchPatternFromApi } from "../services/api";
+import { fetchPatternFromApi, submitScoreToApi, syncBestScoreToApi } from "../services/api";
 import type { DifficultyConfig, DifficultyMode, GameState, Phase } from "../types/game";
 import { Grid } from "./Grid";
 import { Header } from "./Header";
@@ -13,6 +14,15 @@ const REVEAL_DURATION_MS = 1000;
 const REVIEW_BLINK_DURATION_MS = 1000;
 const BETWEEN_ROUNDS_MS = 450;
 const MAX_MISTAKES = 3;
+
+type GameSectionProps = {
+  accountBestScore?: number;
+  accountEmail?: string;
+  authToken?: string;
+  onAccountBestScoreChange?: (bestScore: number) => void;
+  onSignOut?: () => void;
+  onUnauthorized?: () => void;
+};
 
 /**
  * Creates the initial game state for the selected difficulty.
@@ -31,26 +41,53 @@ function createInitialGameState(config: DifficultyConfig): GameState {
 }
 
 /**
+ * Returns whether an error represents an unauthorized API response.
+ */
+function isUnauthorizedError(error: unknown): boolean {
+  return error instanceof ApiError && error.status === 401;
+}
+
+/**
+ * Persists the best score to browser storage.
+ */
+function persistLocalBestScore(score: number): void {
+  try {
+    localStorage.setItem(BEST_SCORE_KEY, String(score));
+  } catch {
+    // Ignore storage write failures.
+  }
+}
+
+/**
  * Renders the main memory-training game and coordinates round progression.
  */
-export function GameSection() {
+export function GameSection({
+  accountBestScore = 0,
+  accountEmail,
+  authToken,
+  onAccountBestScoreChange = () => undefined,
+  onSignOut,
+  onUnauthorized = () => undefined,
+}: GameSectionProps) {
   const revealTimeoutRef = useRef<number | null>(null);
   const revealBlinkTimeoutRef = useRef<number | null>(null);
   const revealFrameRef = useRef<number | null>(null);
   const reviewRestartTimeoutRef = useRef<number | null>(null);
   const roundTransitionTimeoutRef = useRef<number | null>(null);
   const roundSuccessTimeoutRef = useRef<number | null>(null);
+  const syncMarkerRef = useRef<number | null>(null);
 
   const [difficultyMode, setDifficultyMode] = useState<DifficultyMode>("easy");
   const [gameState, setGameState] = useState<GameState>(() => createInitialGameState(getDifficultyConfig("easy")));
   const [wrongSelections, setWrongSelections] = useState<number[]>([]);
-  const [bestScore, setBestScore] = useState(0);
+  const [localBestScore, setLocalBestScore] = useState(0);
   const [hasStarted, setHasStarted] = useState(false);
   const [isLoadingRound, setIsLoadingRound] = useState(false);
   const [isRevealBlinkActive, setIsRevealBlinkActive] = useState(false);
   const [isReviewBlinkActive, setIsReviewBlinkActive] = useState(false);
 
   const currentModeConfig = useMemo(() => getDifficultyConfig(difficultyMode), [difficultyMode]);
+  const effectiveBestScore = Math.max(localBestScore, accountBestScore);
 
   /**
    * Clears timers related to the current reveal phase and reveal blink.
@@ -119,18 +156,14 @@ export function GameSection() {
   /**
    * Persists the best score whenever the current run exceeds it.
    */
-  const syncBestScore = useCallback((score: number) => {
-    setBestScore((prevBest) => {
+  const syncLocalBestScore = useCallback((score: number) => {
+    setLocalBestScore((prevBest) => {
       const nextBest = Math.max(prevBest, score);
       if (nextBest === prevBest) {
         return prevBest;
       }
 
-      try {
-        localStorage.setItem(BEST_SCORE_KEY, String(nextBest));
-      } catch {
-        // Ignore storage failure in restricted browser modes.
-      }
+      persistLocalBestScore(nextBest);
 
       return nextBest;
     });
@@ -162,8 +195,13 @@ export function GameSection() {
 
       let nextPattern: number[] = [];
       try {
-        nextPattern = await fetchPatternFromApi(modeConfig.grid, safeTiles);
-      } catch {
+        nextPattern = await fetchPatternFromApi(modeConfig.grid, safeTiles, authToken);
+      } catch (error) {
+        if (isUnauthorizedError(error)) {
+          onUnauthorized();
+          return;
+        }
+
         nextPattern = generatePattern(modeConfig.grid, safeTiles);
       }
 
@@ -185,7 +223,7 @@ export function GameSection() {
       setIsLoadingRound(false);
       scheduleRevealEnd();
     },
-    [clearRevealTimer, clearRoundTimers, difficultyMode, scheduleRevealEnd],
+    [authToken, clearRevealTimer, clearRoundTimers, difficultyMode, onUnauthorized, scheduleRevealEnd],
   );
 
   /**
@@ -212,7 +250,21 @@ export function GameSection() {
       pattern: [...gameState.pattern],
     };
 
-    syncBestScore(nextScore);
+    syncLocalBestScore(nextScore);
+
+    if (authToken) {
+      void submitScoreToApi(nextScore, nextLevel, authToken)
+        .then((payload) => {
+          if (payload.bestScore > accountBestScore) {
+            onAccountBestScoreChange(payload.bestScore);
+          }
+        })
+        .catch((error) => {
+          if (isUnauthorizedError(error)) {
+            onUnauthorized();
+          }
+        });
+    }
 
     if (roundTransitionTimeoutRef.current !== null) {
       window.clearTimeout(roundTransitionTimeoutRef.current);
@@ -239,7 +291,17 @@ export function GameSection() {
       roundTransitionTimeoutRef.current = null;
       void startRound(scheduledRound.level, scheduledRound.tiles, scheduledRound.score, scheduledRound.pattern);
     }, BETWEEN_ROUNDS_MS);
-  }, [difficultyMode, gameState.level, gameState.pattern, gameState.score, gameState.tilesToRemember, startRound, syncBestScore]);
+  }, [
+    authToken,
+    difficultyMode,
+    gameState.level,
+    gameState.pattern,
+    gameState.score,
+    gameState.tilesToRemember,
+    onUnauthorized,
+    startRound,
+    syncLocalBestScore,
+  ]);
 
   /**
    * Handles a tile press during recall and tracks correct or incorrect choices.
@@ -313,12 +375,47 @@ export function GameSection() {
     try {
       const stored = Number(localStorage.getItem(BEST_SCORE_KEY) ?? "0");
       if (!Number.isNaN(stored) && stored > 0) {
-        setBestScore(stored);
+        setLocalBestScore(stored);
       }
     } catch {
       // Ignore storage read failures.
     }
   }, []);
+
+  /**
+   * Syncs a higher local best score to the account when logged in.
+   */
+  useEffect(() => {
+    if (!authToken || localBestScore <= accountBestScore || syncMarkerRef.current === localBestScore) {
+      return;
+    }
+
+    syncMarkerRef.current = localBestScore;
+    void syncBestScoreToApi(localBestScore, authToken)
+      .then((payload) => {
+        onAccountBestScoreChange(payload.bestScore);
+      })
+      .catch((error) => {
+        if (isUnauthorizedError(error)) {
+          onUnauthorized();
+        }
+      })
+      .finally(() => {
+        syncMarkerRef.current = null;
+      });
+  }, [accountBestScore, authToken, localBestScore, onAccountBestScoreChange, onUnauthorized]);
+
+  /**
+   * Pulls a higher account best score into local storage on session restore.
+   */
+  useEffect(() => {
+    if (accountBestScore <= localBestScore) {
+      return;
+    }
+
+    setLocalBestScore(accountBestScore);
+    persistLocalBestScore(accountBestScore);
+  }, [accountBestScore, localBestScore]);
 
   /**
    * Detects completed rounds and schedules the next-round transition once.
@@ -395,13 +492,15 @@ export function GameSection() {
     <>
       <section className="mx-auto flex min-h-[calc(100dvh-9.5rem)] w-full max-w-5xl flex-col rounded-3xl border border-slate-200/90 bg-white/95 p-4 shadow-xl backdrop-blur-sm sm:p-6">
         <Header
+          accountEmail={accountEmail}
           level={gameState.level}
           modeLabel={currentModeConfig.label}
           score={gameState.score}
-          bestScore={bestScore}
+          bestScore={effectiveBestScore}
           mistakes={gameState.mistakes}
           maxMistakes={MAX_MISTAKES}
           phase={gameState.phase}
+          onSignOut={onSignOut}
         />
 
         {!hasStarted ? (
@@ -434,7 +533,7 @@ export function GameSection() {
               >
                 Start Training
               </button>
-              <p className="mt-4 text-sm text-slate-500">Best Score: {bestScore}</p>
+              <p className="mt-4 text-sm text-slate-500">Best Score: {effectiveBestScore}</p>
             </div>
           </div>
         ) : (

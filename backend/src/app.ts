@@ -1,5 +1,6 @@
 import cors from "cors";
 import express, { type NextFunction, type Request, type Response } from "express";
+import authRoutes from "./features/auth/routes/auth.routes";
 import { movieRoutes } from "./features/movies/routes/movie.routes";
 import gameRoutes from "./routes/game.routes";
 
@@ -84,6 +85,7 @@ app.get("/health", handleHealth);
 app.get("/api/health", handleApiHealth);
 
 app.use("/api/game", gameRoutes);
+app.use("/api/auth", authRoutes);
 app.use("/api/movies", movieRoutes);
 
 app.use(handleNotFound);

@@ -1,4 +1,5 @@
 import { Router, type NextFunction, type Request, type Response } from "express";
+import { requireAuth } from "../../auth/middleware/requireAuth";
 import {
   createMovie,
   deleteMovie,
@@ -18,6 +19,7 @@ const logMovieRouterTraffic = (req: Request, _res: Response, next: NextFunction)
 };
 
 movieRoutes.use(logMovieRouterTraffic);
+movieRoutes.use(requireAuth);
 
 movieRoutes.get("/", listMovies);
 movieRoutes.get("/:id", getMovieById);

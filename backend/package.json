@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc -p tsconfig.json",
+    "test": "npm run build && node --test dist",
     "start": "npm run build && node dist/server.js"
   },
   "dependencies": {
@@ -12,6 +13,7 @@
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "medhatile": "file:..",
+    "mongodb": "^7.1.1",
     "mongoose": "^9.2.3"
   },
   "devDependencies": {

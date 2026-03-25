@@ -6,7 +6,8 @@
     "setup": "npm --prefix frontend install && npm --prefix backend install",
     "dev:frontend": "npm --prefix frontend run dev",
     "dev:backend": "npm --prefix backend run dev",
-    "build": "npm --prefix frontend run build && npm --prefix backend run build"
+    "build": "npm --prefix frontend run build && npm --prefix backend run build",
+    "test": "npm --prefix frontend run test && npm --prefix backend run test"
   },
   "dependencies": {
     "mongodb": "^7.1.0"
