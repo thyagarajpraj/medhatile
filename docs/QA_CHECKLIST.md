@@ -55,5 +55,6 @@
 - Tiles and side panel do not overlap.
 - Tile board remains usable on mobile width.
 - On mobile gameplay layout, tile board appears above tile-progress/review panel.
+- Tile Progress panel shows mistakes alongside blue-tile, correct, and remaining counters.
 - No unexpected page scroll that hides primary controls.
 - Visual states are distinguishable (blue/violet/red markers).

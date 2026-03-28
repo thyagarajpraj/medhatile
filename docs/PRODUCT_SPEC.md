@@ -71,6 +71,7 @@ type GameState = {
 - Mobile layout is usable without clipped core controls.
 - Login/register gate is usable on mobile widths without clipped inputs or buttons.
 - In mobile gameplay layout, tile stats/answer panel is rendered below the tile board.
+- Tile Progress shows blue-tile, correct, remaining, and mistakes counters together.
 - Best score survives page reload.
 - In development mode, `/movies` route loads after auth and can perform list/create/update/delete against backend `/api/movies` endpoints.
 

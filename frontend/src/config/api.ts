@@ -1,7 +1,7 @@
 import { isDev } from "./env";
 
 const DEFAULT_DEV_API_BASE_URL = "http://127.0.0.1:5000/api";
-const DEFAULT_PROD_API_BASE_URL = "/api";
+const DEFAULT_PROD_API_BASE_URL = "https://medhatile.onrender.com/api";
 
 /**
  * Trims and strips trailing slashes from an API base URL candidate.

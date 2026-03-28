@@ -26,6 +26,7 @@ This repo uses a split architecture (`frontend` + `backend`).
   - Hard: 8x8, starts at 5 tiles
 - Reveal phase for 1 second
 - Recall phase with mistakes tracking
+- Tile Progress panel shows blue tiles, correct picks, remaining picks, and mistakes
 - Review phase showing:
   - Clicked correct (`OK`)
   - Missed correct (`.`)
@@ -95,7 +96,7 @@ Default env values:
 - `backend/.env`: `PORT=5000`, `FRONTEND_ORIGIN=http://localhost:5173`, `ROUNDS_PER_LEVEL=5`
 - `backend/.env`: add `JWT_SECRET` and `JWT_EXPIRES_IN_HOURS` for auth sessions
 - `frontend/.env.development`: `VITE_API_BASE_URL=http://127.0.0.1:5000/api`
-- `frontend/.env.production`: `VITE_API_BASE_URL=/api` (override in Vercel with deployed backend URL)
+- `frontend/.env.production`: `VITE_API_BASE_URL=https://medhatile.onrender.com/api`
 3. Run backend:
 ```bash
 npm run dev:backend
@@ -151,5 +152,5 @@ Frontend (Vercel):
 1. Import project in Vercel.
 2. Set root directory to `frontend`.
 3. Set env var:
-   - `VITE_API_BASE_URL=https://<your-render-service>.onrender.com/api`
+   - `VITE_API_BASE_URL=https://medhatile.onrender.com/api`
 

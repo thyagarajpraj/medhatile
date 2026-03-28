@@ -6,8 +6,6 @@ type HeaderProps = {
   modeLabel: string;
   score: number;
   bestScore: number;
-  mistakes: number;
-  maxMistakes: number;
   phase: Phase;
   onSignOut?: () => void;
 };
@@ -28,8 +26,6 @@ export function Header({
   modeLabel,
   score,
   bestScore,
-  mistakes,
-  maxMistakes,
   phase,
   onSignOut,
 }: HeaderProps) {
@@ -65,9 +61,6 @@ export function Header({
             <span className="rounded-full bg-white px-2.5 py-0.5">Level: {level}</span>
             <span className="rounded-full bg-white px-2.5 py-0.5">Score: {score}</span>
             <span className="rounded-full bg-white px-2.5 py-0.5">Best: {bestScore}</span>
-            <span className="rounded-full bg-white px-2.5 py-0.5">
-              Mistakes: {mistakes}/{maxMistakes}
-            </span>
           </div>
         </section>
       </div>

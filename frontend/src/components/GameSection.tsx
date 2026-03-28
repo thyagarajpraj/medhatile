@@ -497,8 +497,6 @@ export function GameSection({
           modeLabel={currentModeConfig.label}
           score={gameState.score}
           bestScore={effectiveBestScore}
-          mistakes={gameState.mistakes}
-          maxMistakes={MAX_MISTAKES}
           phase={gameState.phase}
           onSignOut={onSignOut}
         />
@@ -564,6 +562,9 @@ export function GameSection({
                   <span className="rounded-full bg-slate-100 px-2.5 py-0.5">Blue Tiles: {totalBlueTiles}</span>
                   <span className="rounded-full bg-slate-100 px-2.5 py-0.5">Correct: {correctTiles}</span>
                   <span className="rounded-full bg-slate-100 px-2.5 py-0.5">Remaining: {remainingTiles}</span>
+                  <span className="rounded-full bg-slate-100 px-2.5 py-0.5">
+                    Mistakes: {gameState.mistakes}/{MAX_MISTAKES}
+                  </span>
                 </div>
               </section>
 

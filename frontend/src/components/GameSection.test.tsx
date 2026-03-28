@@ -150,6 +150,7 @@ describe("GameSection", () => {
 
     await waitFor(() => expect(screen.getByRole("button", { name: "Tile 5" })).toHaveTextContent("X"));
     expect(screen.getByText("Remaining: 3")).toBeInTheDocument();
+    expect(screen.getByText("Mistakes: 1/3")).toBeInTheDocument();
   },
     10000,
   );
