@@ -23,7 +23,9 @@ Notes:
 
 2. Deploy backend
 - Target: Render Web Service (or equivalent).
-- Required env: `PORT`, `FRONTEND_ORIGIN`, `MONGO_URI`, optional debug flags.
+- Preferred config source: repo-level `render.yaml`.
+- Required env: `FRONTEND_ORIGIN`, `MONGO_URI`, `JWT_SECRET`, optional debug flags.
+- Runtime note: Render should supply `PORT`; do not hardcode it in the dashboard.
 - Health checks: `/health`, `/api/health`, `/api/game/*`, `/api/movies*`.
 
 3. Deploy frontend

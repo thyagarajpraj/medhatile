@@ -134,12 +134,18 @@ From repo root:
 ## Deployment
 Backend (Render):
 1. Push repo to GitHub.
-2. Create Render Web Service for `backend`.
+2. Create a Render Web Service from [render.yaml](/d:/code/medhatile/render.yaml), or configure the service manually with root directory `backend`.
 3. Build command: `npm install && npm run build`
-4. Start command: `node dist/server.js`
+4. Start command: `npm run start`
 5. Env:
-   - `PORT=5000`
+   - Do not set `PORT` manually; Render injects it.
    - `FRONTEND_ORIGIN=https://<your-vercel-domain>.vercel.app`
+   - `MONGO_URI=<your-mongodb-uri>`
+   - `JWT_SECRET=<long-random-secret>`
+   - `JWT_EXPIRES_IN_HOURS=24`
+   - `ROUNDS_PER_LEVEL=5`
+   - `DEBUG_HTTP=false`
+   - If MongoDB is temporarily unreachable, the service still starts and public health checks stay up, but auth and Movies CRUD will remain degraded until the database recovers.
 
 Frontend (Vercel):
 1. Import project in Vercel.

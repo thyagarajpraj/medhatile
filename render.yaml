@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: medhatile-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 20.19.0
+      - key: FRONTEND_ORIGIN
+        sync: false
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRES_IN_HOURS
+        value: "24"
+      - key: ROUNDS_PER_LEVEL
+        value: "5"
+      - key: DEBUG_HTTP
+        value: "false"
