@@ -10,6 +10,7 @@ router.use(requireAuth);
 router.get("/config", getGameConfig);
 router.get("/levels", getLevels);
 router.get("/pattern", getPattern);
+router.post("/save", requireDatabase, submitScore);
 router.post("/submit", requireDatabase, submitScore);
 router.post("/best-score/sync", requireDatabase, syncBestScore);
 

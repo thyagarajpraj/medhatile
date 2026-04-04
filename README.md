@@ -3,134 +3,151 @@
 Build your mind, one tile at a time.
 
 ## What It Is
-MedhaTile is a cognitive training game focused on:
-- Working memory
-- Focus
-- Pattern recall
-- Attention control
+MedhaTile is a full-stack memory and tile game project with:
+- `web/`: React + Vite app
+- `mobile/`: React Native CLI app shell
+- `shared/`: reusable API, game logic, and types
+- `backend/`: Express + MongoDB API
 
-This repo uses a split architecture (`frontend` + `backend`).
+The active architecture is a simple shared setup where both web and mobile consume the same backend and reuse the same shared modules.
 
 ## Features
-- Mobile-friendly sign in / register gate before app access
-- Best score persisted in localStorage and synced per signed-in account
-- Development-only app navigation links:
-  - `Game` -> `/`
-  - `Movies` -> `/movies`
-- Production UI behavior:
-  - only `Game` view is rendered
-  - top header/nav is hidden
-- Difficulty mode dropdown before starting:
-  - Easy: 4x4, starts at 3 tiles
-  - Medium: 6x6, starts at 4 tiles
-  - Hard: 8x8, starts at 5 tiles
-- Reveal phase for 1 second
-- Recall phase with mistakes tracking
-- Tile Progress panel shows blue tiles, correct picks, remaining picks, and mistakes
-- Review phase showing:
-  - Clicked correct (`OK`)
-  - Missed correct (`.`)
-  - Wrong click (`X`)
-- 3 mistakes trigger 1-second answer blink and same-round restart
-- Back to Start control returns to the start screen during gameplay
-- Best score persisted in localStorage (`medhatile_best_score`)
-- Movies section connected to MongoDB `sample_mflix.movies` with:
-  - list and title search
-  - create movie
-  - update movie
-  - delete movie
-- Email/password auth with bearer-token sessions
+- Email/password login and registration against the deployed backend
+- Register flow includes `Confirm Password` validation before submit
+- Stored web sessions are revalidated against `/api/auth/me` on reload
+- Shared API layer for auth, score saving, and leaderboard loading
+- Shared 2048-style tile movement and score logic used by both clients
+- Web app routes for choose-game, 2048, identifying tiles, and leaderboard
+- Top-right game dropdown for quickly switching between the available tile games
+- Mobile app screens for login, game, and leaderboard
+- Shared JWT-based auth flow:
+  - Web stores session in `localStorage`
+  - Mobile stores session in `AsyncStorage`
 
 ## Stack
-- Frontend: React + Vite + TypeScript + Tailwind CSS
-- Backend: Node.js + Express + TypeScript
+- Web: React + Vite + TypeScript + React Router + React Query
+- Mobile: React Native CLI + TypeScript + AsyncStorage
+- Shared: TypeScript workspace packages
+- Backend: Node.js + Express + TypeScript + MongoDB Atlas
+- Package manager: pnpm workspaces
 
 ## Project Structure
 ```txt
 medhatile/
-|-- .github/
-|   `-- workflows/
-|       `-- ci.yml
-|-- frontend/
+|-- web/
 |   |-- src/
-|   |   |-- components/
-|   |   |-- features/
-|   |   |   `-- movies/
-|   |   |       |-- components/
-|   |   |       |-- services/
-|   |   |       `-- types/
-|   `-- .env.example
+|   |   |-- App.tsx
+|   |   |-- main.tsx
+|   |   `-- index.css
+|   `-- package.json
+|-- mobile/
+|   |-- src/
+|   |   `-- App.tsx
+|   |-- index.js
+|   `-- package.json
+|-- shared/
+|   |-- api/
+|   |   |-- api.ts
+|   |   |-- auth.ts
+|   |   `-- game.ts
+|   |-- game/
+|   |   `-- logic.ts
+|   `-- types/
+|       `-- index.ts
 |-- backend/
 |   |-- src/
-|   |   |-- features/
-|   |   |   |-- auth/
-|   |   |   `-- movies/
-|   |   |       |-- controllers/
-|   |   |       |-- models/
-|   |   |       `-- routes/
-|   `-- .env.example
+|   `-- package.json
 |-- docs/
-|   |-- PRODUCT_SPEC.md
-|   |-- API_CONTRACT.md
-|   |-- IMPLEMENTATION_STEPS.md
-|   |-- DEPLOYMENT_STATUS.md
-|   `-- QA_CHECKLIST.md
-|-- AGENT_PROMPT.md
-`-- README.md
+|-- pnpm-workspace.yaml
+`-- package.json
 ```
 
-## Deployment Tracking
-- Current deployment plan and status: `docs/DEPLOYMENT_STATUS.md`
+## Shared Reuse
+Both apps now consume the same shared modules:
+- [shared/api/index.ts](/d:/code/medhatile/shared/api/index.ts) for backend calls
+- [shared/game/index.ts](/d:/code/medhatile/shared/game/index.ts) for reusable tile logic
+- [shared/types/index.ts](/d:/code/medhatile/shared/types/index.ts) for shared TypeScript models
+
+That means web and mobile no longer duplicate auth requests, leaderboard fetching, score saving, or core tile-board helpers.
 
 ## Setup
-1. Install frontend and backend dependencies:
+1. Install workspace dependencies:
 ```bash
 npm run setup
 ```
-2. Create env files:
+2. Create backend env file:
 ```bash
 copy backend\.env.example backend\.env
-copy frontend\.env.example frontend\.env
 ```
-Default env values:
-- `backend/.env`: `PORT=5000`, `FRONTEND_ORIGIN=http://localhost:5173`, `ROUNDS_PER_LEVEL=5`
-- `backend/.env`: add `JWT_SECRET` and `JWT_EXPIRES_IN_HOURS` for auth sessions
-- `frontend/.env.development`: `VITE_API_BASE_URL=http://127.0.0.1:5000/api`
-- `frontend/.env.production`: `VITE_API_BASE_URL=https://medhatile.onrender.com/api`
-3. Run backend:
+3. Set backend env values:
+- `MONGO_URI=<your-mongodb-uri>`
+- `JWT_SECRET=<long-random-secret>`
+- `FRONTEND_ORIGIN=http://localhost:5173,https://medhatile.vercel.app`
+- optional: `JWT_EXPIRES_IN_HOURS=24`
+4. Run backend:
 ```bash
 npm run dev:backend
 ```
-4. Run frontend (new terminal):
+5. Run web app in a new terminal:
 ```bash
-npm run dev:frontend
+npm run dev:web
 ```
-5. Open app routes:
+6. Open:
 ```txt
+http://localhost:5173/login
 http://localhost:5173/
-http://localhost:5173/movies
+http://localhost:5173/games/adding
+http://localhost:5173/games/identifying
+http://localhost:5173/leaderboard
 ```
-Note:
-- The app now shows a login/register gate before either view is available.
-- `/movies` is available in development after sign-in.
-- In production, only `/` (game view) is shown after sign-in.
+
+## Mobile Status
+The mobile source is implemented and typechecked, but it is not launched automatically from this repo.
+
+What is ready:
+- shared API integration
+- shared game logic integration
+- login/game/leaderboard screens
+- AsyncStorage session persistence
+
+What still needs local device setup:
+- React Native CLI native folders (`android/` and `ios/`)
+- Metro + emulator or device execution
+
+See [mobile/README.md](/d:/code/medhatile/mobile/README.md).
 
 ## Scripts
 From repo root:
 - `npm run setup`
-- `npm run dev:frontend`
+- `npm run dev:web`
+- `npm run dev:mobile`
 - `npm run dev:backend`
+- `npm run lint`
+- `npm run test:web`
+- `npm run test`
+- `npm run coverage`
+- `npm run precommit`
 - `npm run build`
 
-## Code Documentation
-- JSDoc is required for all declared functions in `frontend/src` and `backend/src`.
-- Keep descriptions short and focused on behavior, inputs, and outcomes.
+## Pre-Commit Workflow
+The repo now includes a Husky + lint-staged pre-commit pipeline.
 
-## GitHub
-- CI workflow: `.github/workflows/ci.yml`
-- Runs on every push and pull request:
-  - Frontend: install, test, build
-  - Backend: install, build
+What it checks before a commit:
+- staged JS/TS/TSX files are auto-linted with `eslint --fix`
+- web tests pass
+- web coverage runs and must stay at or above 85% line coverage
+- the full workspace build passes
+- `console.log` is blocked inside `web/src`
+
+Files involved:
+- [.husky/pre-commit](/d:/code/medhatile/.husky/pre-commit)
+- [scripts/precommit-check.js](/d:/code/medhatile/scripts/precommit-check.js)
+- [eslint.config.mjs](/d:/code/medhatile/eslint.config.mjs)
+
+If hooks need to be reinitialized locally with Husky v9:
+```bash
+npx husky init
+```
 
 ## Deployment
 Backend (Render):
@@ -143,14 +160,14 @@ Backend (Render):
    - `FRONTEND_ORIGIN=https://<your-vercel-domain>.vercel.app`
    - `MONGO_URI=<your-mongodb-uri>`
    - `JWT_SECRET=<long-random-secret>`
-   - `JWT_EXPIRES_IN_HOURS=24`
-   - `ROUNDS_PER_LEVEL=5`
-   - `DEBUG_HTTP=false`
-   - If MongoDB is temporarily unreachable, the service still starts and public health checks stay up, but auth and Movies CRUD will remain degraded until the database recovers.
 
-Frontend (Vercel):
+Web (Vercel):
 1. Import project in Vercel.
-2. Set root directory to `frontend`.
-3. Set env var:
-   - `VITE_API_BASE_URL=https://medhatile.onrender.com/api`
+2. Set root directory to `web`.
+3. The shared API layer already targets `https://medhatile.onrender.com`.
+
+## Notes
+- The active workspace and build flow use `web/`, `mobile/`, `shared/`, and `backend/`.
+- Retired code has been moved under [archives](/d:/code/medhatile/archives) so it can be reviewed or deleted later.
+- The remaining files under [frontend](/d:/code/medhatile/frontend) are local legacy artifacts such as `node_modules/`, `dist/`, and empty folders left behind after archiving the old source.
 

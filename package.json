@@ -2,14 +2,35 @@
   "name": "medhatile",
   "private": true,
   "version": "1.0.0",
+  "packageManager": "pnpm@10.8.1",
   "scripts": {
-    "setup": "npm --prefix frontend install && npm --prefix backend install",
-    "dev:frontend": "npm --prefix frontend run dev",
-    "dev:backend": "npm --prefix backend run dev",
-    "build": "npm --prefix frontend run build && npm --prefix backend run build",
-    "test": "npm --prefix frontend run test && npm --prefix backend run test"
+    "setup": "corepack pnpm install",
+    "dev:frontend": "corepack pnpm --filter web dev",
+    "dev:backend": "corepack pnpm --filter backend dev",
+    "dev:web": "corepack pnpm --filter web dev",
+    "dev:mobile": "corepack pnpm --filter mobile start",
+    "lint": "eslint web/src web/vite.config.ts scripts --max-warnings=0",
+    "test": "corepack pnpm --filter web test",
+    "coverage": "corepack pnpm --filter web coverage",
+    "build": "corepack pnpm --filter web build && corepack pnpm --filter backend build && corepack pnpm --filter mobile typecheck",
+    "test:web": "corepack pnpm --filter web test",
+    "precommit": "lint-staged && npm run test && npm run coverage && npm run build && node scripts/precommit-check.js"
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx}": [
+      "eslint --fix"
+    ]
   },
   "dependencies": {
     "mongodb": "^7.1.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@vitest/coverage-v8": "^4.1.2",
+    "eslint": "^10.2.0",
+    "globals": "^17.4.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "typescript-eslint": "^8.58.0"
   }
 }

@@ -2,6 +2,7 @@
 
 1. Environment setup
 - Run `npm run setup` from repo root.
+- If Husky hooks need to be recreated locally, run `npx husky init`.
 - Create local env files from examples for frontend and backend.
 
 2. Backend readiness
@@ -27,8 +28,11 @@
 - Verify app boot and API base URL (`VITE_API_BASE_URL`).
 - Verify the auth gate appears before the app shell and register includes `Confirm Password`.
 - Verify navigation routes:
-  - `/` loads game UI after sign-in.
-  - `/movies` loads movies UI after sign-in.
+  - `/` loads choose-game UI after sign-in.
+  - `/games/adding` loads the 2048 game after sign-in.
+  - `/games/identifying` loads the memory game after sign-in.
+  - `/leaderboard` loads the leaderboard after sign-in.
+  - the top-right game dropdown switches between the available game routes.
 
 4. Game engine behavior
 - Ensure phase flow: `idle -> reveal -> recall -> review`.
@@ -48,15 +52,18 @@
 - Read/write best score using `medhatile_best_score`.
 
 7. Code documentation
-- Add JSDoc comments for all declared functions in `frontend/src` and `backend/src`.
+- Add JSDoc comments for all declared functions in `web/src` and `backend/src`.
 
 8. Validation
-- Frontend tests: `cd frontend && npm run test`
-- Frontend build: `cd frontend && npm run build`
+- Lint: `npm run lint`
+- Web tests: `cd web && npm run test`
+- Web coverage: `cd web && npm run coverage`
+- Web build: `cd web && npm run build`
 - Backend build: `cd backend && npm run build`
+- Full pre-commit flow: `npm run precommit`
 
 9. GitHub CI
 - Push branch and open PR.
 - Confirm `.github/workflows/ci.yml` passes:
-  - Frontend test/build
+  - Web test/build
   - Backend build

@@ -4,20 +4,19 @@
 A minimal cognitive training web app for memory and focus using timed tile recall.
 
 ## App Sections
-- Password auth gate shown before the app shell in all modes
-- `Game` section mounted at `/`
-- `Movies` section mounted at `/movies`
-- Development mode (`import.meta.env.DEV`):
-  - top navigation exposes a visible `Movies` link after sign-in
-  - switching between `/` and `/movies` happens without full-page refresh
-- Production mode (`import.meta.env.PROD`):
-  - app renders only the game view after sign-in
-  - top navigation/header is hidden
+- Password auth gate shown before the app shell.
+- `Choose Game` section mounted at `/`.
+- `2048` game mounted at `/games/adding`.
+- `Identifying Tiles` game mounted at `/games/identifying`.
+- `Leaderboard` mounted at `/leaderboard`.
+- Protected in-app screens expose a top-right game dropdown for switching between available games.
+- The identifying-tiles route renders its own live-style header while still sharing the same authenticated session state.
 
 ## Authentication
 - Email/password registration and sign-in are required before app access.
 - Register screen includes `Confirm Password` and blocks submit when it does not match.
 - Session is stored in localStorage and restored on reload when valid.
+- Stored sessions are validated against `GET /api/auth/me` before protected UI is trusted.
 - All non-health app APIs require a bearer token.
 - Best score remains in localStorage and syncs to the signed-in account, using the higher value for display.
 
@@ -72,9 +71,11 @@ type GameState = {
 - Login/register gate is usable on mobile widths without clipped inputs or buttons.
 - In mobile gameplay layout, tile stats/answer panel is rendered below the tile board.
 - Tile Progress shows blue-tile, correct, remaining, and mistakes counters together.
+- Header controls remain usable on mobile widths, including sign out and the game dropdown.
 - Best score survives page reload.
-- In development mode, `/movies` route loads after auth and can perform list/create/update/delete against backend `/api/movies` endpoints.
+- The choose-game flow preserves access to both the 2048 and identifying-tiles games.
+- The identifying-tiles route exposes ARIA labels for key controls and announces loading/phase changes politely.
 
 ## Code Documentation
-- All declared functions in frontend/backend source include JSDoc comments.
+- All declared functions in `web/src` and `backend/src` include JSDoc comments.
 

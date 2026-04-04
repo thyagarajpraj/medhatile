@@ -3,6 +3,7 @@ import express, { type NextFunction, type Request, type Response } from "express
 import authRoutes from "./features/auth/routes/auth.routes";
 import { movieRoutes } from "./features/movies/routes/movie.routes";
 import gameRoutes from "./routes/game.routes";
+import leaderboardRoutes from "./routes/leaderboard.routes";
 
 const app = express();
 
@@ -87,6 +88,7 @@ app.get("/api/health", handleApiHealth);
 app.use("/api/game", gameRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/movies", movieRoutes);
+app.use("/api/leaderboard", leaderboardRoutes);
 
 app.use(handleNotFound);
 

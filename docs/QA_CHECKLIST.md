@@ -7,9 +7,9 @@
 - Session restores after reload when token is valid.
 - Sign out returns to the auth gate.
 - Start screen shows mode selector and start button.
-- In development mode, top navigation includes a `Movies` link after sign-in.
-- In development mode, visiting `/movies` shows movies section UI after sign-in.
-- In production mode, header/nav is hidden and only game view is shown after sign-in.
+- Choose-game route exposes both tile games.
+- Top-right header controls include a game dropdown and sign-out action.
+- Game dropdown can navigate between choose-game, adding tiles, and identifying tiles.
 - Reveal phase lasts 1 second and shows only pattern tiles in blue.
 - Recall accepts clicks only in recall phase.
 - Wrong clicks increase mistake count.
@@ -42,12 +42,15 @@
 - `DELETE /api/movies/:id` deletes movie by id after auth.
 
 ## Test and Build
-- `frontend`: `npm run test` passes.
-- `frontend`: `npm run build` passes.
+- `root`: `npm run lint` passes.
+- `web`: `npm run test` passes.
+- `web`: `npm run coverage` keeps line coverage at or above 85%.
+- `web`: `npm run build` passes.
 - `backend`: `npm run build` passes.
+- `root`: `npm run precommit` passes.
 
 ## Code Documentation
-- All declared functions in `frontend/src` and `backend/src` include JSDoc.
+- All declared functions in `web/src` and `backend/src` include JSDoc.
 - JSDoc comments describe intent and expected behavior accurately.
 
 ## UX
@@ -56,5 +59,6 @@
 - Tile board remains usable on mobile width.
 - On mobile gameplay layout, tile board appears above tile-progress/review panel.
 - Tile Progress panel shows mistakes alongside blue-tile, correct, and remaining counters.
+- Header controls remain usable on mobile width, including the game dropdown.
 - No unexpected page scroll that hides primary controls.
 - Visual states are distinguishable (blue/violet/red markers).

@@ -1,0 +1,12 @@
+{
+  "name": "@medhatile/shared-api",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "dependencies": {
+    "@medhatile/shared-types": "workspace:*",
+    "axios": "^1.8.4"
+  }
+}
