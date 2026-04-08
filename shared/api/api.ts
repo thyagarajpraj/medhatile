@@ -17,9 +17,13 @@ function resolveApiBaseUrl(): string {
     return configuredValue.replace(/\/+$/, "");
   }
 
-  if (typeof window !== "undefined") {
-    const { hostname } = window.location;
-    if (hostname === "localhost" || hostname === "127.0.0.1") {
+  const windowLocation =
+    typeof window !== "undefined" && typeof window.location === "object" && window.location
+      ? window.location
+      : undefined;
+
+  if (typeof windowLocation?.hostname === "string") {
+    if (windowLocation.hostname === "localhost" || windowLocation.hostname === "127.0.0.1") {
       return "http://127.0.0.1:5000";
     }
   }

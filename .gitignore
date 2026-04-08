@@ -8,6 +8,13 @@ dist/
 frontend/dist/
 backend/dist/
 coverage/
+mobile/android/.gradle/
+mobile/android/build/
+mobile/android/app/build/
+mobile/android/app/debug.keystore
+mobile/ios/build/
+mobile/.bundle/
+mobile/android/app/src/main/res/drawable-*/_node_modules_pnpm_*
 
 # Logs
 *.log

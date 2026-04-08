@@ -19,7 +19,7 @@ The active architecture is a simple shared setup where both web and mobile consu
 - Shared 2048-style tile movement and score logic used by both clients
 - Web app routes for choose-game, 2048, identifying tiles, and leaderboard
 - Top-right game dropdown for quickly switching between the available tile games
-- Mobile app screens for login, game, and leaderboard
+- Mobile app screens for auth, choose-game, 2048, and leaderboard
 - Shared JWT-based auth flow:
   - Web stores session in `localStorage`
   - Mobile stores session in `AsyncStorage`
@@ -107,12 +107,16 @@ The mobile source is implemented and typechecked, but it is not launched automat
 What is ready:
 - shared API integration
 - shared game logic integration
-- login/game/leaderboard screens
-- AsyncStorage session persistence
+- auth flow with `Confirm Password`
+- validated AsyncStorage session restore via `/api/auth/me`
+- React Native CLI Metro config plus native `android/` and `ios/` project scaffolds
+- choose-game, `2048`, and leaderboard mobile screens
 
 What still needs local device setup:
-- React Native CLI native folders (`android/` and `ios/`)
 - Metro + emulator or device execution
+- workspace dependency install via `npm run setup`
+- for iOS on macOS, `bundle install` and `bundle exec pod install` in `mobile/ios`
+- the mobile `Identifying Tiles` experience in the next milestone
 
 See [mobile/README.md](/d:/code/medhatile/mobile/README.md).
 

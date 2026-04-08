@@ -4,25 +4,32 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "start": "react-native start",
-    "android": "react-native run-android",
-    "ios": "react-native run-ios",
+    "dev": "node ./scripts/dev-android.js",
+    "start": "node ./scripts/start-metro.js",
+    "android": "node ./scripts/run-rnc-cli.js run-android",
+    "ios": "node ./scripts/run-rnc-cli.js run-ios",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@medhatile/shared-api": "workspace:*",
     "@medhatile/shared-game": "workspace:*",
     "@medhatile/shared-types": "workspace:*",
+    "@babel/runtime": "^7.26.10",
     "@react-native-async-storage/async-storage": "^2.1.2",
     "axios": "^1.8.4",
-    "react": "^19.2.0",
+    "react": "19.0.0",
     "react-native": "^0.78.0"
   },
   "devDependencies": {
     "@babel/core": "^7.26.10",
     "@babel/preset-typescript": "^7.26.0",
     "@react-native-community/cli": "^15.0.1",
+    "@react-native-community/cli-platform-android": "^15.0.1",
+    "@react-native-community/cli-platform-ios": "^15.0.1",
     "@react-native/babel-preset": "^0.78.0",
+    "@react-native/gradle-plugin": "^0.78.0",
+    "@react-native/metro-config": "^0.78.0",
+    "@react-native/typescript-config": "^0.78.0",
     "@types/react": "^19.0.10",
     "typescript": "^5.9.3"
   }

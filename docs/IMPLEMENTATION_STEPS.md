@@ -34,13 +34,19 @@
   - `/leaderboard` loads the leaderboard after sign-in.
   - the top-right game dropdown switches between the available game routes.
 
-4. Game engine behavior
+4. Mobile foundation readiness
+- Confirm the mobile app restores AsyncStorage sessions only after validating `GET /api/auth/me`.
+- Confirm the mobile auth gate includes `Confirm Password` for register.
+- Confirm authenticated mobile users land on the choose-game screen before opening `2048`.
+- Confirm mobile leaderboard loading still works after the screen split.
+
+5. Game engine behavior
 - Ensure phase flow: `idle -> reveal -> recall -> review`.
 - Reveal duration must be exactly 1000ms.
 - Mistake limit must remain 3.
 - On round success, increment score and start next level in same selected mode.
 
-5. Feedback and review
+6. Feedback and review
 - Track wrong selections separately.
 - In review phase, show markers:
   - `OK` clicked correct
@@ -48,13 +54,13 @@
   - `X` wrong click
 - After 3 mistakes, blink answer tiles for 1000ms and restart the same round automatically.
 
-6. Persistence
+7. Persistence
 - Read/write best score using `medhatile_best_score`.
 
-7. Code documentation
+8. Code documentation
 - Add JSDoc comments for all declared functions in `web/src` and `backend/src`.
-
-8. Validation
+ 
+9. Validation
 - Lint: `npm run lint`
 - Web tests: `cd web && npm run test`
 - Web coverage: `cd web && npm run coverage`
@@ -62,7 +68,7 @@
 - Backend build: `cd backend && npm run build`
 - Full pre-commit flow: `npm run precommit`
 
-9. GitHub CI
+10. GitHub CI
 - Push branch and open PR.
 - Confirm `.github/workflows/ci.yml` passes:
   - Web test/build
