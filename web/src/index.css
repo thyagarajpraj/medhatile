@@ -132,6 +132,7 @@ a:focus-visible {
   color: #1e293b;
   padding: 10px 16px;
   font-weight: 700;
+  font-size: 0.92rem;
 }
 
 .nav a.active {
@@ -231,6 +232,8 @@ a:focus-visible {
   border: 1px solid #cbd5e1;
   background: white;
   color: #132238;
+  font-size: 0.92rem;
+  cursor: pointer;
 }
 
 .compact-select {
@@ -239,9 +242,10 @@ a:focus-visible {
   min-height: 44px;
   border-radius: 999px;
   padding: 10px 40px 10px 16px;
-  font-size: 0.95rem;
+  font-size: 0.88rem;
   font-weight: 700;
   box-shadow: var(--shadow-panel);
+  cursor: pointer;
 }
 
 .field-row {
@@ -357,14 +361,14 @@ a:focus-visible {
 
 .identifying-title {
   margin: 0;
-  font-size: clamp(2rem, 4vw, 3rem);
+  font-size: clamp(1.8rem, 3.5vw, 2.55rem);
   line-height: 1;
 }
 
 .identifying-subtitle {
   margin: 8px 0 0;
   color: #64748b;
-  font-size: 1.1rem;
+  font-size: 0.98rem;
 }
 
 .identifying-account-actions {
@@ -380,7 +384,7 @@ a:focus-visible {
   border: 1px solid #dbe4f0;
   background: rgba(248, 250, 252, 0.95);
   color: #475569;
-  font-size: 0.95rem;
+  font-size: 0.86rem;
   font-weight: 600;
   padding: 10px 16px;
 }
@@ -403,7 +407,7 @@ a:focus-visible {
 .identifying-section-label {
   margin: 0;
   color: #64748b;
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -424,7 +428,7 @@ a:focus-visible {
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.96);
   color: #334155;
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   padding: 6px 11px;
@@ -449,7 +453,7 @@ a:focus-visible {
 
 .identifying-start-title {
   margin: 0;
-  font-size: clamp(1.35rem, 3.2vw, 1.75rem);
+  font-size: clamp(1.2rem, 2.8vw, 1.55rem);
 }
 
 .identifying-start-controls {
@@ -467,6 +471,7 @@ a:focus-visible {
   color: #475569;
   line-height: 1.7;
   max-width: 440px;
+  font-size: 0.95rem;
 }
 
 .identifying-start-button {
@@ -518,7 +523,7 @@ a:focus-visible {
 .identifying-phase-hint {
   margin: 0;
   color: #64748b;
-  font-size: 0.98rem;
+  font-size: 0.9rem;
   line-height: 1.6;
 }
 
@@ -531,7 +536,7 @@ a:focus-visible {
 .identifying-legend-pill {
   border-radius: 999px;
   border: 1px solid transparent;
-  font-size: 0.74rem;
+  font-size: 0.69rem;
   font-weight: 800;
   letter-spacing: 0.05em;
   padding: 9px 12px;
@@ -702,11 +707,11 @@ a:focus-visible {
   }
 
   .identifying-title {
-    font-size: 2.3rem;
+    font-size: 2rem;
   }
 
   .identifying-subtitle {
-    font-size: 1rem;
+    font-size: 0.92rem;
   }
 
   .identifying-account-chip,
@@ -734,7 +739,7 @@ a:focus-visible {
   }
 
   .identifying-pill {
-    font-size: 0.74rem;
+    font-size: 0.69rem;
     padding: 7px 10px;
   }
 
@@ -750,13 +755,13 @@ a:focus-visible {
 
 @media (max-width: 420px) {
   .identifying-title {
-    font-size: 2rem;
+    font-size: 1.8rem;
   }
 
   .identifying-subtitle,
   .identifying-phase-hint,
   .identifying-start-copy {
-    font-size: 0.95rem;
+    font-size: 0.88rem;
   }
 
   .identifying-board-panel {
