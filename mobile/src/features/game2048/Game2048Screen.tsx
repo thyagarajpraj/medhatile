@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { PanResponder, Pressable, StyleSheet, Text, View } from "react-native";
 import { saveScore } from "@medhatile/shared-api";
 import type { AuthSession } from "@medhatile/shared-types";
 import { applyMove, cellColor, createInitialGameState, type Direction, type GameViewState } from "./game2048";
@@ -11,6 +11,23 @@ type Game2048ScreenProps = {
   onUnauthorized: () => Promise<void>;
   session: AuthSession;
 };
+
+const SWIPE_THRESHOLD = 24;
+
+function resolveSwipeDirection(dx: number, dy: number): Direction | null {
+  const absoluteDx = Math.abs(dx);
+  const absoluteDy = Math.abs(dy);
+
+  if (absoluteDx < SWIPE_THRESHOLD && absoluteDy < SWIPE_THRESHOLD) {
+    return null;
+  }
+
+  if (absoluteDx > absoluteDy) {
+    return dx > 0 ? "right" : "left";
+  }
+
+  return dy > 0 ? "down" : "up";
+}
 
 /**
  * Renders the mobile 2048 game screen and score actions.
@@ -29,6 +46,19 @@ export function Game2048Screen({
   function handleMove(direction: Direction): void {
     onGameChange(applyMove(game, direction));
   }
+
+  const boardPanResponder = PanResponder.create({
+    onMoveShouldSetPanResponder: (_, gestureState) =>
+      Math.abs(gestureState.dx) >= SWIPE_THRESHOLD || Math.abs(gestureState.dy) >= SWIPE_THRESHOLD,
+    onPanResponderRelease: (_, gestureState) => {
+      const direction = resolveSwipeDirection(gestureState.dx, gestureState.dy);
+
+      if (direction) {
+        handleMove(direction);
+      }
+    },
+    onPanResponderTerminationRequest: () => true,
+  });
 
   /**
    * Saves the current 2048 score to the backend and syncs best score state.
@@ -65,20 +95,23 @@ export function Game2048Screen({
       <Text style={styles.title}>2048</Text>
       <Text style={styles.scoreText}>Score: {game.score}</Text>
       <Text style={styles.subtleText}>Best: {Math.max(session.user.bestScore, game.score)}</Text>
+      <Text style={styles.hintText}>Swipe on the board or use the buttons below to move tiles.</Text>
 
-      <View style={styles.board}>
-        {game.board.map((row, rowIndex) => (
-          <View key={`row-${rowIndex}`} style={styles.row}>
-            {row.map((value, columnIndex) => (
-              <View
-                key={`tile-${rowIndex}-${columnIndex}`}
-                style={[styles.tile, { backgroundColor: cellColor(value) }]}
-              >
-                <Text style={styles.tileLabel}>{value || "."}</Text>
-              </View>
-            ))}
-          </View>
-        ))}
+      <View style={styles.boardGestureSurface} {...boardPanResponder.panHandlers}>
+        <View style={styles.board}>
+          {game.board.map((row, rowIndex) => (
+            <View key={`row-${rowIndex}`} style={styles.row}>
+              {row.map((value, columnIndex) => (
+                <View
+                  key={`tile-${rowIndex}-${columnIndex}`}
+                  style={[styles.tile, { backgroundColor: cellColor(value) }]}
+                >
+                  <Text style={styles.tileLabel}>{value || "."}</Text>
+                </View>
+              ))}
+            </View>
+          ))}
+        </View>
       </View>
 
       <View style={styles.controls}>
@@ -125,6 +158,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "700",
     color: "#132238",
+  },
+  hintText: {
+    color: "#475569",
+    lineHeight: 20,
+  },
+  boardGestureSurface: {
+    borderRadius: 20,
   },
   board: {
     gap: 8,

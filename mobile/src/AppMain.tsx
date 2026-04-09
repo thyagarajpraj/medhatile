@@ -162,7 +162,11 @@ export default function AppMain(): React.JSX.Element {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        scrollEnabled={screen !== "game-2048"}
+      >
         <View style={styles.shell}>
           <Text style={styles.appTitle}>MedhaTile Mobile</Text>
 
