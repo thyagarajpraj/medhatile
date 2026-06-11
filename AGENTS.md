@@ -6,10 +6,11 @@ Use a simple 2-agent flow to build fast while keeping quality high.
 ## Agent Roles
 ### 1) Builder Agent
 Scope:
+- Read `docs/PROJECT_STATUS_AND_RULES.md` before changing behavior, process, release, or deployment docs.
 - Implement features from `docs/PRODUCT_SPEC.md`
 - Follow API behavior in `docs/API_CONTRACT.md`
 - Execute steps in `docs/IMPLEMENTATION_STEPS.md`
-- Stay within exclusions listed in `README.md`
+- Stay within scope boundaries listed in `docs/PROJECT_STATUS_AND_RULES.md`
 
 Must do:
 - Keep frontend and backend modular
@@ -28,7 +29,8 @@ Must do:
 - Approve only when checklist is satisfied
 
 ## Working Agreement
-- Do not add out-of-scope features (auth, payments, ads, leaderboard, DB, AI, streaks).
+- Existing auth, leaderboard, and MongoDB-backed features are in scope because they are documented in the product and API docs.
+- Do not add out-of-scope features such as payments, ads, AI, streaks, social feeds, public profiles, subscriptions, undocumented game modes, or new persistent data domains.
 - Do not change difficulty progression or game phase model.
 - Keep API contract stable unless explicitly approved.
 
@@ -38,6 +40,7 @@ Must do:
 - `docs/API_CONTRACT.md` -> backend response shape and validation
 - `docs/QA_CHECKLIST.md` -> acceptance criteria
 - `docs/IMPLEMENTATION_STEPS.md` -> delivery order
+- `docs/PROJECT_STATUS_AND_RULES.md` -> current status, scope boundaries, and quality gates
 
 2. Scope control:
 - No speculative features.
@@ -48,11 +51,13 @@ Must do:
 - Keep changes small and milestone-based.
 - Update docs when behavior or setup changes.
 - Preserve folder structure and naming conventions in repo docs.
+- Remove or clearly mark stale docs when active routes, release readiness, or deployment status changes.
 
 4. Quality gate before handoff:
 - Run `npm run build` at repo root.
 - Confirm no TypeScript errors.
 - Confirm backend endpoints required by contract still work.
+- State every relevant check that was not run.
 
 5. Reviewer reporting format:
 - Findings first, ordered by severity.
@@ -96,3 +101,4 @@ Review the implementation against `docs/QA_CHECKLIST.md`, `docs/PRODUCT_SPEC.md`
 - Backend endpoints behave per `docs/API_CONTRACT.md`
 - Root build passes: `npm run build`
 - No out-of-scope features introduced
+- Unverified checks and residual risks are explicitly documented

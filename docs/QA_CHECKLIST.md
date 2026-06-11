@@ -40,6 +40,8 @@
 - `POST /api/movies` creates a movie with valid payload after auth.
 - `PUT /api/movies/:id` updates movie by id after auth.
 - `DELETE /api/movies/:id` deletes movie by id after auth.
+- Documented web routes match active mounted routes.
+- Documented API routes match `docs/API_CONTRACT.md`.
 
 ## Test and Build
 - `root`: `npm run lint` passes.
@@ -52,6 +54,8 @@
 ## Code Documentation
 - All declared functions in `web/src` and `backend/src` include JSDoc.
 - JSDoc comments describe intent and expected behavior accurately.
+- Status, deployment, and release docs are updated when behavior or readiness changes.
+- Stale route names, retired folder references, and unverified completion claims are removed or clearly marked.
 
 ## UX
 - Auth screen is mobile friendly and shows only stacked controls on narrow widths.

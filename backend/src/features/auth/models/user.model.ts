@@ -27,8 +27,6 @@ const userSchema = new Schema(
   },
 );
 
-userSchema.index({ email: 1 }, { unique: true });
-
 export type UserRecord = InferSchemaType<typeof userSchema>;
 
 export const User = mongoose.models.User || mongoose.model<UserRecord>("User", userSchema);

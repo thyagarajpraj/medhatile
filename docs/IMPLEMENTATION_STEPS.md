@@ -1,5 +1,11 @@
 # Implementation Steps
 
+0. Status and rules check
+- Read `docs/PROJECT_STATUS_AND_RULES.md`.
+- Confirm the requested work is in scope before editing.
+- If docs and implementation disagree, update the stale source of truth or flag the mismatch.
+- Do not change API contracts, difficulty progression, or the game phase model without explicit approval.
+
 1. Environment setup
 - Run `npm run setup` from repo root.
 - If Husky hooks need to be recreated locally, run `npx husky init`.
@@ -67,6 +73,8 @@
 - Web build: `cd web && npm run build`
 - Backend build: `cd backend && npm run build`
 - Full pre-commit flow: `npm run precommit`
+- For documentation-only updates, still run root `npm run build` when the update changes status, release, or process docs.
+- Clearly report any checks that were not run.
 
 10. GitHub CI
 - Push branch and open PR.

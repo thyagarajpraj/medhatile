@@ -1,6 +1,6 @@
 # Deployment Status
 
-Last updated: March 5, 2026
+Last updated: June 11, 2026
 
 ## Current Environment Status
 
@@ -8,12 +8,15 @@ Last updated: March 5, 2026
 |---|---|---|
 | Frontend | Local Vite dev server: `http://localhost:5173` | Active (local) |
 | Backend | Local Node/Express server: `http://127.0.0.1:5000` | Active (local) |
-| API base used by movies UI | `http://127.0.0.1:5000/api` | Active (local) |
+| API base used by web/shared API | `http://127.0.0.1:5000/api` | Active (local) |
 | Database | MongoDB Atlas cluster (`sample_mflix.movies` used for Movies CRUD) | Connected in local backend |
 
 Notes:
 - No production cloud deployment has been finalized yet.
 - Secrets should stay only in local `backend/.env` or hosting platform env settings, never in docs.
+- Current status and scope rules are summarized in `docs/PROJECT_STATUS_AND_RULES.md`.
+- Local smoke check on June 11, 2026 confirmed web root, `/health`, and `/api/health` return HTTP 200.
+- Fresh backend startup on June 11, 2026 had no duplicate `User.email` index warning after cleanup.
 
 ## Deployment Plan
 
@@ -31,11 +34,11 @@ Notes:
 3. Deploy frontend
 - Target: Vercel (or equivalent).
 - Required env: `VITE_API_BASE_URL=<deployed-backend>/api`.
-- Validate `/` and `/movies` route behavior.
+- Validate `/`, `/games/adding`, `/games/identifying`, and `/leaderboard` route behavior.
 
 4. Post-deploy validation
 - Confirm CORS between frontend and backend.
-- Run Movies CRUD smoke checks.
+- Run Movies CRUD API smoke checks if backend CRUD remains in release scope.
 - Run game flow checks from QA checklist.
 
 ## Plan Status Snapshot
@@ -43,17 +46,17 @@ Notes:
 | Item | Status |
 |---|---|
 | Local frontend/backend/db integration | Done |
-| Env-based UI gating (dev: game+movies, prod: game-only) | Done |
+| Env-based API configuration | Done |
 | Mobile gameplay info panel below tiles | Done |
-| Scroll pagination + virtualized list for Movies | Done |
-| Debounced search in Movies | Done |
-| React Query integration + query cache in Movies | Done |
+| Movies CRUD backend API | Done locally |
 | Root build (`npm run build`) | Done |
 | Production backend deployment | Pending |
 | Production frontend deployment | Pending |
 | End-to-end production validation | Pending |
+| Android Play Store release readiness | Pending |
 
 ## Known Blockers
 
 - No repository-level blockers at this time.
 - Remaining work is deployment and production verification.
+- Android release still needs signing, Play Console setup, policy forms, and real-device testing before Play Store upload.

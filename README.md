@@ -24,6 +24,18 @@ The active architecture is a simple shared setup where both web and mobile consu
   - Web stores session in `localStorage`
   - Mobile stores session in `AsyncStorage`
 
+## Current Status And Rules
+The current status, source-of-truth order, scope boundaries, and quality gates are tracked in [docs/PROJECT_STATUS_AND_RULES.md](/d:/code/medhatile/docs/PROJECT_STATUS_AND_RULES.md).
+
+Latest verified gate:
+- `npm run build` passed on June 11, 2026.
+
+Still pending:
+- production backend deployment
+- production web deployment
+- production end-to-end validation
+- Android release signing, Play Store setup, and real-device release testing
+
 ## Stack
 - Web: React + Vite + TypeScript + React Router + React Query
 - Mobile: React Native CLI + TypeScript + AsyncStorage
@@ -168,7 +180,11 @@ Backend (Render):
 Web (Vercel):
 1. Import project in Vercel.
 2. Set root directory to `web`.
-3. The shared API layer already targets `https://medhatile.onrender.com`.
+3. Set `VITE_API_BASE_URL` to the deployed backend `/api` URL.
+4. The shared API layer has a fallback backend URL, but production readiness should only be marked done after deployed health and auth checks pass.
+
+Mobile (Android / Play Store):
+- release planning and Android publishing checklist live in [docs/MOBILE_PLAYSTORE_RELEASE.md](/d:/code/medhatile/docs/MOBILE_PLAYSTORE_RELEASE.md)
 
 ## Notes
 - The active workspace and build flow use `web/`, `mobile/`, `shared/`, and `backend/`.
