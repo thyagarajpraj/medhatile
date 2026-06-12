@@ -13,7 +13,7 @@ async function startServer(): Promise<void> {
   app.listen(PORT, () => {
     console.log(`Server running on ${PORT}`);
     console.log(`HTTP debug logging: ${process.env.DEBUG_HTTP === "true" ? "ON" : "OFF"}`);
-    console.log(`CORS frontend origin: ${process.env.FRONTEND_ORIGIN || "http://localhost:5173"}`);
+    console.log(`CORS frontend origin: ${process.env.FRONTEND_ORIGIN || "http://localhost:3000"}`);
   });
 }
 

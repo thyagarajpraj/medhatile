@@ -1,5 +1,8 @@
+"use client";
+
 import { type ChangeEvent } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { usePathname, useRouter } from "next/navigation";
+import { cn } from "@/src/lib/cn";
 
 /**
  * Resolves the currently selected game route for the shared game switcher.
@@ -20,14 +23,14 @@ function getSelectedGameRoute(pathname: string): string {
  * Renders the shared game-selection dropdown used by protected routes.
  */
 export function GameRouteSelect({ id = "game-switcher" }: { id?: string }) {
-  const location = useLocation();
-  const navigate = useNavigate();
+  const router = useRouter();
+  const pathname = usePathname();
 
   /**
    * Routes the user to the selected game or landing page.
    */
   function handleChange(event: ChangeEvent<HTMLSelectElement>): void {
-    navigate(event.target.value);
+    router.push(event.target.value);
   }
 
   return (
@@ -37,8 +40,10 @@ export function GameRouteSelect({ id = "game-switcher" }: { id?: string }) {
       </label>
       <select
         id={id}
-        className="select-input compact-select"
-        value={getSelectedGameRoute(location.pathname)}
+        className={cn(
+          "min-h-11 min-w-[170px] cursor-pointer rounded-full border border-slate-200 bg-white/95 px-4 py-2.5 text-sm font-bold text-brand-900 shadow-sm transition hover:border-brand-300",
+        )}
+        value={getSelectedGameRoute(pathname)}
         onChange={handleChange}
         aria-label="Choose a tile game"
       >

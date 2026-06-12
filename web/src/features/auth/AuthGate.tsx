@@ -1,5 +1,18 @@
+"use client";
+
 import { type FormEvent, useMemo, useState } from "react";
 import type { AuthCredentials } from "@medhatile/shared-types";
+import {
+  Card,
+  FieldLabel,
+  Muted,
+  Panel,
+  PrimaryButton,
+  Shell,
+  StatusBanner,
+  TextInput,
+} from "@/src/components/ui";
+import { cn } from "@/src/lib/cn";
 
 export type AuthMode = "login" | "register";
 
@@ -82,35 +95,46 @@ export function AuthGate({ errorMessage, isSubmitting, statusMessage, onAuthenti
   }
 
   return (
-    <div className="shell">
-      <div className="panel auth-card">
-        <div className="panel-inner">
-          <div className="card auth-surface">
-            <p className="muted auth-kicker">MEDHATILE</p>
-            <h1>{isRegisterMode ? "Create your account" : "Sign in to continue"}</h1>
-            <p className="muted">Use the same account on web and mobile. Register if you do not have one yet.</p>
-            <div className="nav auth-mode-toggle" style={{ marginTop: 16, marginBottom: 16 }}>
-              <button
-                type="button"
-                className={mode === "login" ? "primary-button" : "ghost-button"}
-                onClick={() => handleModeChange("login")}
-              >
-                Login
-              </button>
-              <button
-                type="button"
-                className={mode === "register" ? "primary-button" : "ghost-button"}
-                onClick={() => handleModeChange("register")}
-              >
-                Register
-              </button>
+    <Shell className="flex items-center justify-center">
+      <div className="w-full max-w-md">
+        <div className="mb-8 text-center">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-700 to-accent-violet text-2xl font-black text-white shadow-lg shadow-brand-700/30">
+            M
+          </div>
+          <p className="text-xs font-extrabold tracking-[0.25em] text-brand-500 uppercase">MedhaTile</p>
+          <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-brand-900">
+            {isRegisterMode ? "Create your account" : "Welcome back"}
+          </h1>
+          <Muted className="mt-2">Use the same account on web and mobile.</Muted>
+        </div>
+
+        <Panel>
+          <Card className="border-0 bg-transparent p-6 shadow-none">
+            <div className="mb-6 grid grid-cols-2 gap-2 rounded-2xl bg-slate-100/80 p-1">
+              {(["login", "register"] as const).map((tab) => (
+                <button
+                  key={tab}
+                  type="button"
+                  className={cn(
+                    "rounded-xl px-4 py-2.5 text-sm font-bold capitalize transition",
+                    mode === tab
+                      ? "bg-white text-brand-900 shadow-sm"
+                      : "text-slate-500 hover:text-slate-700",
+                  )}
+                  onClick={() => handleModeChange(tab)}
+                >
+                  {tab === "login" ? "Login" : "Register"}
+                </button>
+              ))}
             </div>
-            {statusMessage ? <div className="status">{statusMessage}</div> : null}
-            {activeMessage ? <div className="status error">{activeMessage}</div> : null}
-            <form className="field-row" onSubmit={(event) => void handleSubmit(event)}>
-              <label className="field">
-                <span>Email</span>
-                <input
+
+            {statusMessage ? <StatusBanner>{statusMessage}</StatusBanner> : null}
+            {activeMessage ? <StatusBanner variant="error">{activeMessage}</StatusBanner> : null}
+
+            <form className="grid gap-4" onSubmit={(event) => void handleSubmit(event)}>
+              <FieldLabel>
+                Email
+                <TextInput
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
                   placeholder="you@example.com"
@@ -118,10 +142,10 @@ export function AuthGate({ errorMessage, isSubmitting, statusMessage, onAuthenti
                   autoComplete="email"
                   required
                 />
-              </label>
-              <label className="field">
-                <span>Password</span>
-                <input
+              </FieldLabel>
+              <FieldLabel>
+                Password
+                <TextInput
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
                   placeholder="At least 8 characters"
@@ -130,11 +154,11 @@ export function AuthGate({ errorMessage, isSubmitting, statusMessage, onAuthenti
                   minLength={8}
                   required
                 />
-              </label>
+              </FieldLabel>
               {isRegisterMode ? (
-                <label className="field">
-                  <span>Confirm Password</span>
-                  <input
+                <FieldLabel>
+                  Confirm Password
+                  <TextInput
                     value={confirmPassword}
                     onChange={(event) => setConfirmPassword(event.target.value)}
                     placeholder="Re-enter your password"
@@ -143,16 +167,16 @@ export function AuthGate({ errorMessage, isSubmitting, statusMessage, onAuthenti
                     minLength={8}
                     required
                   />
-                </label>
+                </FieldLabel>
               ) : null}
-              <button className="primary-button" disabled={isSubmitting} type="submit">
+              <PrimaryButton className="w-full py-3" disabled={isSubmitting} type="submit">
                 {isSubmitting ? "Working..." : buttonLabel}
-              </button>
+              </PrimaryButton>
             </form>
-            <p className="muted auth-helper-text">{helperMessage}</p>
-          </div>
-        </div>
+            <Muted className="mt-4 text-center text-xs">{helperMessage}</Muted>
+          </Card>
+        </Panel>
       </div>
-    </div>
+    </Shell>
   );
 }

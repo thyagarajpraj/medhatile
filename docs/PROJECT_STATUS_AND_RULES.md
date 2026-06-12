@@ -10,11 +10,11 @@ This document is the quick reference for where MedhaTile currently stands and wh
 
 | Area | Status | Notes |
 |---|---|---|
-| Web app | Buildable | React/Vite app with auth gate, choose-game route, 2048, identifying tiles, and leaderboard. |
-| Backend API | Buildable | Express/TypeScript API with auth, health, game, score sync, leaderboard, and movies routes. |
+| Web app | Buildable | Next.js App Router app with auth gate, choose-game route, 2048, identifying tiles, and leaderboard. |
+| Backend API | Buildable | Express/TypeScript API with auth, health, game, score sync, leaderboard, and movies routes. Kept separate from web; may migrate to Next.js API routes in future. |
 | Shared packages | Active | Web and mobile reuse shared API, game logic, and types from `shared/`. |
 | Mobile app | Typechecked | React Native CLI app has auth, choose-game, 2048, and leaderboard screens. |
-| Mobile identifying tiles | Pending | Documented as a later mobile milestone. |
+| Mobile identifying tiles | In Progress | Being implemented during web Next.js migration for feature parity. |
 | Local build gate | Passing | `npm run build` passed on June 11, 2026. |
 | Local runtime smoke check | Passing | Web and backend started locally; `/health`, `/api/health`, and web root returned HTTP 200 on June 11, 2026. |
 | Backend startup warnings | Clean | Duplicate `User.email` index warning was removed; fresh backend stderr was empty on June 11, 2026. |
@@ -27,7 +27,7 @@ This document is the quick reference for where MedhaTile currently stands and wh
 
 Verified on June 11, 2026:
 - `npm run build`
-- local web dev server returned HTTP 200 at `http://localhost:5173/`
+- local web dev server returned HTTP 200 at `http://localhost:3000/`
 - local backend returned HTTP 200 for `GET /health`
 - local backend returned HTTP 200 for `GET /api/health`
 - fresh backend startup log had no duplicate `User.email` index warning after cleanup
@@ -118,7 +118,7 @@ Keep the API contract stable unless the user explicitly approves a contract chan
 
 - Do not commit `.env` files, database credentials, JWT secrets, keystores, signing passwords, or Play Console secrets.
 - Keep backend secrets in `backend/.env` locally or hosting-provider environment settings.
-- Production web deployments must set `VITE_API_BASE_URL` to the deployed backend `/api` URL.
+- Production web deployments must set `NEXT_PUBLIC_API_BASE_URL` to the deployed backend host (e.g. `https://medhatile.onrender.com`).
 - Do not assume the fallback backend URL is production-ready until deployment health checks pass.
 - Render or equivalent hosting should provide `PORT`; do not hardcode it.
 - CORS must include the actual deployed frontend origin before production validation is marked done.

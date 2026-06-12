@@ -1,7 +1,7 @@
 Build MedhaTile with separate frontend and backend.
 
 Current requirements:
-- Frontend: React + Vite + TypeScript + Tailwind.
+- Frontend: Next.js App Router + React + TypeScript + Tailwind CSS v4.
 - Backend: Express + TypeScript.
 - Phases: idle, reveal, recall, review.
 - Reveal duration: 3 seconds.

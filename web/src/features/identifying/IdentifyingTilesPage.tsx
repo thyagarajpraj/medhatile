@@ -1,3 +1,5 @@
+"use client";
+
 import { type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { api, saveScore } from "@medhatile/shared-api";
 import {
@@ -10,6 +12,16 @@ import {
   type IdentifyGameState,
   type Phase,
 } from "./logic";
+import {
+  FieldLabel,
+  GhostButton,
+  Muted,
+  Panel,
+  PrimaryButton,
+  SelectInput,
+  Shell,
+  StatusBanner,
+} from "@/src/components/ui";
 import { GameRouteSelect } from "../navigation/GameRouteSelect";
 
 const BEST_SCORE_KEY = "medhatile_best_score";
@@ -562,9 +574,9 @@ export function IdentifyingTilesPage({
   const remainingTiles = Math.max(totalBlueTiles - correctTiles, 0);
 
   return (
-    <main className="shell" aria-labelledby="identifying-page-title">
-      <div className="panel identifying-panel identifying-panel-sleek">
-        <div className="panel-inner">
+    <Shell as="main" aria-labelledby="identifying-page-title">
+      <Panel className="identifying-panel identifying-panel-sleek max-w-5xl">
+        <div className="p-5 sm:p-6">
           <header className="identifying-header" aria-label="Identifying Tiles header">
             <div>
               <h1 className="identifying-title" id="identifying-page-title">
@@ -577,14 +589,14 @@ export function IdentifyingTilesPage({
                 {accountEmail}
               </span>
               <GameRouteSelect id="identifying-game-switcher" />
-              <button
-                className="ghost-button identifying-signout-button"
+              <GhostButton
+                className="identifying-signout-button min-h-12"
                 type="button"
                 onClick={onSignOut}
                 aria-label="Sign out of MedhaTile"
               >
                 Sign Out
-              </button>
+              </GhostButton>
             </div>
           </header>
 
@@ -608,12 +620,11 @@ export function IdentifyingTilesPage({
                   Start Your Recall Session
                 </h2>
                 <div className="identifying-start-controls">
-                  <label className="field identifying-difficulty-field">
-                    <span>Difficulty</span>
-                    <select
+                  <FieldLabel className="identifying-difficulty-field">
+                    Difficulty
+                    <SelectInput
                       value={difficultyMode}
                       onChange={handleModeChange}
-                      className="select-input"
                       aria-label="Select difficulty mode"
                     >
                       {DIFFICULTY_MODES.map((mode) => (
@@ -621,21 +632,21 @@ export function IdentifyingTilesPage({
                           {mode.label}
                         </option>
                       ))}
-                    </select>
-                  </label>
+                    </SelectInput>
+                  </FieldLabel>
                 </div>
                 <p className="identifying-start-copy">
                   Train memory and focus through timed recall rounds with gradually increasing challenge.
                 </p>
-                <button
-                  className="primary-button identifying-start-button"
+                <PrimaryButton
+                  className="identifying-start-button"
                   onClick={startGame}
                   type="button"
                   aria-label={`Start identifying tiles game in ${currentModeConfig.label} mode`}
                 >
                   Start Training
-                </button>
-                <p className="muted identifying-start-best">Best Score: {effectiveBestScore}</p>
+                </PrimaryButton>
+                <Muted className="identifying-start-best">Best Score: {effectiveBestScore}</Muted>
               </div>
             </section>
           ) : (
@@ -645,9 +656,9 @@ export function IdentifyingTilesPage({
                   Memory board
                 </div>
                 {isLoadingRound ? (
-                  <div className="status identifying-loading-state" aria-live="polite">
+                  <StatusBanner className="identifying-loading-state mb-0" aria-live="polite">
                     Preparing round...
-                  </div>
+                  </StatusBanner>
                 ) : (
                   <MemoryBoard
                     gridSize={gameState.gridSize}
@@ -689,19 +700,19 @@ export function IdentifyingTilesPage({
                   </div>
                 ) : null}
 
-                <button
-                  className="ghost-button identifying-back-button"
+                <GhostButton
+                  className="identifying-back-button"
                   type="button"
                   onClick={returnToStart}
                   aria-label="Return to the identifying tiles start screen"
                 >
                   Back to Start
-                </button>
+                </GhostButton>
               </aside>
             </section>
           )}
         </div>
-      </div>
-    </main>
+      </Panel>
+    </Shell>
   );
 }

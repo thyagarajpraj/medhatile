@@ -13,14 +13,34 @@ const app = express();
 const isHttpDebugEnabled = (): boolean => process.env.DEBUG_HTTP === "true";
 
 const rawOrigins = process.env.FRONTEND_ORIGIN ?? "";
-const allowedOrigins = rawOrigins
+const configuredOrigins = rawOrigins
   .split(",")
   .map((origin) => origin.trim())
   .filter(Boolean);
 
+const localDevOrigins = [
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+  "http://localhost:5173",
+];
+
+const isProduction = process.env.NODE_ENV === "production";
+const allowedOrigins = isProduction
+  ? configuredOrigins
+  : configuredOrigins.length > 0
+    ? [...new Set([...configuredOrigins, ...localDevOrigins])]
+    : localDevOrigins;
+
 app.use(
   cors({
-    origin: allowedOrigins.length === 0 ? true : allowedOrigins,
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(null, false);
+    },
   }),
 );
 

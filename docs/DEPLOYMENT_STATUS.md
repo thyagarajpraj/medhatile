@@ -6,7 +6,7 @@ Last updated: June 11, 2026
 
 | Component | Current target | Status |
 |---|---|---|
-| Frontend | Local Vite dev server: `http://localhost:5173` | Active (local) |
+| Frontend | Local Next.js dev server: `http://localhost:3000` | Active (local) |
 | Backend | Local Node/Express server: `http://127.0.0.1:5000` | Active (local) |
 | API base used by web/shared API | `http://127.0.0.1:5000/api` | Active (local) |
 | Database | MongoDB Atlas cluster (`sample_mflix.movies` used for Movies CRUD) | Connected in local backend |
@@ -33,7 +33,7 @@ Notes:
 
 3. Deploy frontend
 - Target: Vercel (or equivalent).
-- Required env: `VITE_API_BASE_URL=<deployed-backend>/api`.
+- Required env: `NEXT_PUBLIC_API_BASE_URL=<deployed-backend>` (host only; shared API client adds `/api/...` paths).
 - Validate `/`, `/games/adding`, `/games/identifying`, and `/leaderboard` route behavior.
 
 4. Post-deploy validation

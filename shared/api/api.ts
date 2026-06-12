@@ -3,6 +3,7 @@ import axios from "axios";
 type ProcessEnvShape = {
   API_BASE_URL?: string;
   VITE_API_BASE_URL?: string;
+  NEXT_PUBLIC_API_BASE_URL?: string;
 };
 
 function resolveApiBaseUrl(): string {
@@ -11,10 +12,14 @@ function resolveApiBaseUrl(): string {
       ? (globalThis as typeof globalThis & { process?: { env?: ProcessEnvShape } }).process?.env
       : undefined;
 
-  const configuredValue = processEnv?.VITE_API_BASE_URL || processEnv?.API_BASE_URL;
+  const configuredValue =
+    processEnv?.NEXT_PUBLIC_API_BASE_URL ||
+    processEnv?.VITE_API_BASE_URL ||
+    processEnv?.API_BASE_URL;
 
   if (configuredValue) {
-    return configuredValue.replace(/\/+$/, "");
+    const trimmed = configuredValue.replace(/\/+$/, "");
+    return trimmed.endsWith("/api") ? trimmed.slice(0, -4) : trimmed;
   }
 
   const windowLocation =

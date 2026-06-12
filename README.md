@@ -4,7 +4,7 @@ Build your mind, one tile at a time.
 
 ## What It Is
 MedhaTile is a full-stack memory and tile game project with:
-- `web/`: React + Vite app
+- `web/`: Next.js App Router app
 - `mobile/`: React Native CLI app shell
 - `shared/`: reusable API, game logic, and types
 - `backend/`: Express + MongoDB API
@@ -37,7 +37,7 @@ Still pending:
 - Android release signing, Play Store setup, and real-device release testing
 
 ## Stack
-- Web: React + Vite + TypeScript + React Router + React Query
+- Web: Next.js + React + TypeScript + Tailwind CSS + React Query
 - Mobile: React Native CLI + TypeScript + AsyncStorage
 - Shared: TypeScript workspace packages
 - Backend: Node.js + Express + TypeScript + MongoDB Atlas
@@ -47,9 +47,9 @@ Still pending:
 ```txt
 medhatile/
 |-- web/
+|   |-- app/
+|   |-- lib/
 |   |-- src/
-|   |   |-- App.tsx
-|   |   |-- main.tsx
 |   |   `-- index.css
 |   `-- package.json
 |-- mobile/
@@ -94,7 +94,7 @@ copy backend\.env.example backend\.env
 3. Set backend env values:
 - `MONGO_URI=<your-mongodb-uri>`
 - `JWT_SECRET=<long-random-secret>`
-- `FRONTEND_ORIGIN=http://localhost:5173,https://medhatile.vercel.app`
+- `FRONTEND_ORIGIN=http://localhost:3000,https://medhatile.vercel.app`
 - optional: `JWT_EXPIRES_IN_HOURS=24`
 4. Run backend:
 ```bash
@@ -106,11 +106,11 @@ npm run dev:web
 ```
 6. Open:
 ```txt
-http://localhost:5173/login
-http://localhost:5173/
-http://localhost:5173/games/adding
-http://localhost:5173/games/identifying
-http://localhost:5173/leaderboard
+http://localhost:3000/login
+http://localhost:3000/
+http://localhost:3000/games/adding
+http://localhost:3000/games/identifying
+http://localhost:3000/leaderboard
 ```
 
 ## Mobile Status
@@ -180,7 +180,7 @@ Backend (Render):
 Web (Vercel):
 1. Import project in Vercel.
 2. Set root directory to `web`.
-3. Set `VITE_API_BASE_URL` to the deployed backend `/api` URL.
+3. Set `NEXT_PUBLIC_API_BASE_URL` to the deployed backend host (no `/api` suffix).
 4. The shared API layer has a fallback backend URL, but production readiness should only be marked done after deployed health and auth checks pass.
 
 Mobile (Android / Play Store):

@@ -49,7 +49,7 @@ describe("AuthGate", () => {
 
     fireEvent.change(screen.getByLabelText("Email"), { target: { value: "  USER@example.com  " } });
     fireEvent.change(screen.getByLabelText("Password"), { target: { value: "password123" } });
-    fireEvent.submit(screen.getAllByRole("button", { name: "Login" })[1].closest("form")!);
+    fireEvent.submit(screen.getByLabelText("Email").closest("form")!);
 
     await waitFor(() => expect(onAuthenticate).toHaveBeenCalledTimes(1));
     expect(onAuthenticate).toHaveBeenCalledWith("login", {

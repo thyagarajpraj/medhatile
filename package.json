@@ -9,7 +9,7 @@
     "dev:backend": "corepack pnpm --filter backend dev",
     "dev:web": "corepack pnpm --filter web dev",
     "dev:mobile": "corepack pnpm --filter mobile start",
-    "lint": "eslint web/src web/vite.config.ts scripts --max-warnings=0",
+    "lint": "eslint web/app web/src web/lib scripts --max-warnings=0",
     "test": "corepack pnpm --filter web test",
     "coverage": "corepack pnpm --filter web coverage",
     "build": "corepack pnpm --filter web build && corepack pnpm --filter backend build && corepack pnpm --filter mobile typecheck",

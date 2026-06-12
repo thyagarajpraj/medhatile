@@ -31,7 +31,7 @@
 
 3. Frontend readiness
 - Start frontend: `npm run dev:frontend`.
-- Verify app boot and API base URL (`VITE_API_BASE_URL`).
+- Verify app boot and API base URL (`NEXT_PUBLIC_API_BASE_URL`).
 - Verify the auth gate appears before the app shell and register includes `Confirm Password`.
 - Verify navigation routes:
   - `/` loads choose-game UI after sign-in.
