@@ -95,7 +95,7 @@ export function Game2048Screen({
       <Text style={styles.title}>2048</Text>
       <Text style={styles.scoreText}>Score: {game.score}</Text>
       <Text style={styles.subtleText}>Best: {Math.max(session.user.bestScore, game.score)}</Text>
-      <Text style={styles.hintText}>Swipe on the board or use the buttons below to move tiles.</Text>
+      <Text style={styles.hintText}>Swipe on the board to move tiles.</Text>
 
       <View style={styles.boardGestureSurface} {...boardPanResponder.panHandlers}>
         <View style={styles.board}>
@@ -114,22 +114,6 @@ export function Game2048Screen({
         </View>
       </View>
 
-      <View style={styles.controls}>
-        <Pressable onPress={() => handleMove("up")} style={styles.secondaryButton}>
-          <Text style={styles.secondaryButtonLabel}>Up</Text>
-        </Pressable>
-        <View style={styles.directionRow}>
-          <Pressable onPress={() => handleMove("left")} style={[styles.secondaryButton, styles.flexButton]}>
-            <Text style={styles.secondaryButtonLabel}>Left</Text>
-          </Pressable>
-          <Pressable onPress={() => handleMove("down")} style={[styles.secondaryButton, styles.flexButton]}>
-            <Text style={styles.secondaryButtonLabel}>Down</Text>
-          </Pressable>
-          <Pressable onPress={() => handleMove("right")} style={[styles.secondaryButton, styles.flexButton]}>
-            <Text style={styles.secondaryButtonLabel}>Right</Text>
-          </Pressable>
-        </View>
-      </View>
 
       <Pressable onPress={() => void handleSaveScore()} style={styles.primaryButton}>
         <Text style={styles.primaryButtonLabel}>Save score</Text>
@@ -185,16 +169,6 @@ const styles = StyleSheet.create({
   tileLabel: {
     fontWeight: "800",
     color: "#132238",
-  },
-  controls: {
-    gap: 10,
-  },
-  directionRow: {
-    flexDirection: "row",
-    gap: 10,
-  },
-  flexButton: {
-    flex: 1,
   },
   primaryButton: {
     backgroundColor: "#132238",

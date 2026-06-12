@@ -2,13 +2,14 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 
 type ChooseGameScreenProps = {
   onOpen2048: () => void;
+  onOpenIdentifying: () => void;
   onOpenLeaderboard: () => void;
 };
 
 /**
  * Renders the mobile choose-game landing screen for the current foundation milestone.
  */
-export function ChooseGameScreen({ onOpen2048, onOpenLeaderboard }: ChooseGameScreenProps) {
+export function ChooseGameScreen({ onOpen2048, onOpenIdentifying, onOpenLeaderboard }: ChooseGameScreenProps) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Choose Your Tile Game</Text>
@@ -20,11 +21,11 @@ export function ChooseGameScreen({ onOpen2048, onOpenLeaderboard }: ChooseGameSc
         <Text style={styles.cardText}>This is the active tile game available on mobile right now.</Text>
       </Pressable>
 
-      <View style={styles.secondaryCard}>
-        <Text style={styles.kicker}>Identifying Tiles</Text>
-        <Text style={styles.cardTitle}>Mobile memory training is planned for the next milestone.</Text>
-        <Text style={styles.cardText}>This foundation pass focuses on auth parity, 2048, leaderboard, and navigation.</Text>
-      </View>
+      <Pressable onPress={onOpenIdentifying} style={styles.primaryCard}>
+        <Text style={[styles.kicker, styles.kickerIdentifying]}>Identifying Tiles</Text>
+        <Text style={styles.cardTitle}>Memorize the pattern, then recall the same tiles.</Text>
+        <Text style={styles.cardText}>Train memory and focus through timed recall rounds.</Text>
+      </Pressable>
 
       <Pressable onPress={onOpenLeaderboard} style={styles.secondaryButton}>
         <Text style={styles.secondaryButtonLabel}>Open Leaderboard</Text>
@@ -32,6 +33,7 @@ export function ChooseGameScreen({ onOpen2048, onOpenLeaderboard }: ChooseGameSc
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -54,20 +56,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#dbe4f0",
   },
-  secondaryCard: {
-    gap: 8,
-    padding: 18,
-    borderRadius: 20,
-    backgroundColor: "#f8fafc",
-    borderWidth: 1,
-    borderColor: "#dbe4f0",
-  },
   kicker: {
     color: "#1d4ed8",
     fontSize: 12,
     fontWeight: "800",
     letterSpacing: 1.5,
     textTransform: "uppercase",
+  },
+  kickerIdentifying: {
+    color: "#7c3aed",
   },
   cardTitle: {
     color: "#132238",

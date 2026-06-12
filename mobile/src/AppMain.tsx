@@ -9,8 +9,10 @@ import { Game2048Screen } from "./features/game2048/Game2048Screen";
 import { createInitialGameState, type GameViewState } from "./features/game2048/game2048";
 import { LeaderboardScreen } from "./features/leaderboard/LeaderboardScreen";
 import { ChooseGameScreen } from "./features/navigation/ChooseGameScreen";
+import { IdentifyingTilesScreen } from "./features/identifying/IdentifyingTilesScreen";
 
-type Screen = "login" | "choose-game" | "game-2048" | "leaderboard";
+type Screen = "login" | "choose-game" | "game-2048" | "game-identifying" | "leaderboard";
+
 
 /**
  * Extracts a user-facing API error message from a thrown request error.
@@ -188,6 +190,9 @@ export default function AppMain(): React.JSX.Element {
                   <Pressable onPress={() => setScreen("game-2048")} style={styles.secondaryPill}>
                     <Text style={styles.secondaryPillLabel}>2048</Text>
                   </Pressable>
+                  <Pressable onPress={() => setScreen("game-identifying")} style={styles.secondaryPill}>
+                    <Text style={styles.secondaryPillLabel}>Identifying</Text>
+                  </Pressable>
                   <Pressable onPress={() => void loadLeaderboard()} style={styles.secondaryPill}>
                     <Text style={styles.secondaryPillLabel}>Leaderboard</Text>
                   </Pressable>
@@ -204,7 +209,11 @@ export default function AppMain(): React.JSX.Element {
               ) : null}
 
               {screen === "choose-game" ? (
-                <ChooseGameScreen onOpen2048={() => setScreen("game-2048")} onOpenLeaderboard={() => void loadLeaderboard()} />
+                <ChooseGameScreen
+                  onOpen2048={() => setScreen("game-2048")}
+                  onOpenIdentifying={() => setScreen("game-identifying")}
+                  onOpenLeaderboard={() => void loadLeaderboard()}
+                />
               ) : null}
 
               {screen === "game-2048" ? (
@@ -215,6 +224,26 @@ export default function AppMain(): React.JSX.Element {
                   onStatusMessageChange={setStatusMessage}
                   onUnauthorized={() => signOut("Your session expired. Sign in again.")}
                   session={session}
+                />
+              ) : null}
+
+              {screen === "game-identifying" ? (
+                <IdentifyingTilesScreen
+                  accountBestScore={session.user.bestScore}
+                  onAccountBestScoreChange={(bestScore) => {
+                    void persistSession({
+                      ...session,
+                      user: {
+                        ...session.user,
+                        bestScore,
+                      },
+                    });
+                  }}
+                  onUnauthorized={async () => {
+                    await signOut("Your session expired. Sign in again.");
+                  }}
+                  session={session}
+                  onBackToStart={() => setScreen("choose-game")}
                 />
               ) : null}
 
