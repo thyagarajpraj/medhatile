@@ -21,13 +21,16 @@ import {
   type IdentifyGameState,
   type Phase,
 } from "./logic";
-
-const BEST_SCORE_KEY = "medhatile_best_score";
-const REVEAL_BLINK_DURATION_MS = 1000;
-const REVEAL_DURATION_MS = 1000;
-const REVIEW_BLINK_DURATION_MS = 1000;
-const BETWEEN_ROUNDS_MS = 450;
-const MAX_MISTAKES = 3;
+import {
+  BEST_SCORE_KEY,
+  REVEAL_BLINK_DURATION_MS,
+  REVEAL_DURATION_MS,
+  REVIEW_BLINK_DURATION_MS,
+  BETWEEN_ROUNDS_MS,
+  MAX_MISTAKES,
+  PHASE_LABELS,
+  PHASE_HINTS,
+} from "./constants";
 
 type TileState = "default" | "reveal" | "selected_correct" | "answer" | "wrong";
 
@@ -39,19 +42,6 @@ type IdentifyingTilesScreenProps = {
   onBackToStart: () => void;
 };
 
-const PHASE_LABELS: Record<Phase, string> = {
-  idle: "Ready",
-  reveal: "Observe",
-  recall: "Recall",
-  review: "Answer",
-};
-
-const PHASE_HINTS: Record<Phase, string> = {
-  idle: "Get ready for the next pattern.",
-  reveal: "Observe the highlighted tiles.",
-  recall: "Tap the same tiles from memory.",
-  review: "OK: correct, .: missed, X: wrong click.",
-};
 
 /**
  * Returns whether the provided error represents an unauthorized API response.

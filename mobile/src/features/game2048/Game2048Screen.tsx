@@ -2,6 +2,7 @@ import { PanResponder, Pressable, StyleSheet, Text, View } from "react-native";
 import { saveScore } from "@medhatile/shared-api";
 import type { AuthSession } from "@medhatile/shared-types";
 import { applyMove, cellColor, createInitialGameState, type Direction, type GameViewState } from "./game2048";
+import { SWIPE_THRESHOLD } from "./constants";
 
 type Game2048ScreenProps = {
   game: GameViewState;
@@ -12,7 +13,6 @@ type Game2048ScreenProps = {
   session: AuthSession;
 };
 
-const SWIPE_THRESHOLD = 24;
 
 function resolveSwipeDirection(dx: number, dy: number): Direction | null {
   const absoluteDx = Math.abs(dx);
