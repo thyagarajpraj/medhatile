@@ -86,13 +86,9 @@ res.status(500).json({ error: "Failed to register user", details: String(error) 
 
 ---
 
-### W-06: Mobile Feature Parity Gap
+### ~~W-06: Mobile Feature Parity Gap~~ — RESOLVED
 
-**Location:** `mobile/src/features/identifying/`
-
-**Problem:** `PROJECT_STATUS_AND_RULES.md` records "Mobile identifying tiles: In Progress." The web version is complete but the mobile version is incomplete. The mobile app has a partial `IdentifyingTilesScreen.tsx` and `logic.ts` but feature parity is not yet achieved.
-
-**Impact:** Mobile app cannot be released to Play Store with a broken or missing game screen.
+**Status:** The `PROJECT_STATUS_AND_RULES.md` recorded identifying tiles as "In Progress" but the implementation was completed in commit `395cf33` (after that doc was last updated). `mobile/src/features/identifying/IdentifyingTilesScreen.tsx` is fully implemented (924 lines) with animations, Animated API, difficulty modes, phase state machine, score sync, and error handling. Feature parity with web is achieved. The status doc needs updating in Phase 2.
 
 ---
 
