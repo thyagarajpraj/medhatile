@@ -15,9 +15,10 @@ This document is the quick reference for where MedhaTile currently stands and wh
 | Shared packages | Active | Web and mobile reuse shared API, game logic, and types from `shared/`. |
 | Mobile app | Typechecked | React Native CLI app has auth, choose-game, 2048, and leaderboard screens. |
 | Mobile identifying tiles | In Progress | Being implemented during web Next.js migration for feature parity. |
-| Local build gate | Passing | `npm run build` passed on June 11, 2026. |
-| Local runtime smoke check | Passing | Web and backend started locally; `/health`, `/api/health`, and web root returned HTTP 200 on June 11, 2026. |
-| Backend startup warnings | Clean | Duplicate `User.email` index warning was removed; fresh backend stderr was empty on June 11, 2026. |
+| Local build gate | Passing | `npm run build` passed on October 20, 2026. |
+| Local runtime smoke check | Passing | Web and backend started locally; `/health`, `/api/health`, and web root returned HTTP 200 on October 20, 2026. |
+| Backend startup warnings | Clean | Duplicate `User.email` index warning was removed; fresh backend stderr was empty on October 20, 2026. |
+| Theme system | Active | Five selectable web themes default to Neo-Brutalist and persist via browser storage without changing gameplay logic. |
 | Production backend deployment | Pending | Deployment target is Render or equivalent. |
 | Production web deployment | Pending | Deployment target is Vercel or equivalent. |
 | Production end-to-end validation | Pending | Requires deployed backend/frontend plus smoke testing. |
@@ -25,7 +26,7 @@ This document is the quick reference for where MedhaTile currently stands and wh
 
 ## Verification Status
 
-Verified on June 11, 2026:
+Verified on October 20, 2026:
 - `npm run build`
 - local web dev server returned HTTP 200 at `http://localhost:3000/`
 - local backend returned HTTP 200 for `GET /health`
@@ -68,8 +69,9 @@ These are already part of the approved application surface:
 - choose-game route
 - 2048 game
 - identifying-tiles web route
-- leaderboard
+- leaderboards
 - score submit and best-score sync
+- five visual theme variants, defaulting to Neo-Brutalist and persisting between reloads
 - shared API/game/type packages
 - MongoDB-backed backend persistence
 - Movies CRUD routes and local development support where already present

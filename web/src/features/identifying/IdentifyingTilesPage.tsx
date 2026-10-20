@@ -22,6 +22,7 @@ import {
   Shell,
   StatusBanner,
 } from "@/src/components/ui";
+import { ThemeSelector } from "@/src/components/ThemeSelector";
 import { GameRouteSelect } from "../navigation/GameRouteSelect";
 
 const BEST_SCORE_KEY = "medhatile_best_score";
@@ -588,6 +589,7 @@ export function IdentifyingTilesPage({
               <span className="identifying-account-chip" aria-label={`Signed in as ${accountEmail}`}>
                 {accountEmail}
               </span>
+              <ThemeSelector className="identifying-theme-select" />
               <GameRouteSelect id="identifying-game-switcher" />
               <GhostButton
                 className="identifying-signout-button min-h-12"

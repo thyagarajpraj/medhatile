@@ -19,6 +19,8 @@ The active architecture is a simple shared setup where both web and mobile consu
 - Shared 2048-style tile movement and score logic used by both clients
 - Web app routes for choose-game, 2048, identifying tiles, and leaderboard
 - Top-right game dropdown for quickly switching between the available tile games
+- Five selectable visual themes with Neo-Brutalist as the default theme and persistent storage across reloads
+- Full-background tile-state color treatment with visible shadows that preserves the existing memory-recall gameplay rules
 - Mobile app screens for auth, choose-game, 2048, and leaderboard
 - Shared JWT-based auth flow:
   - Web stores session in `localStorage`
@@ -28,7 +30,7 @@ The active architecture is a simple shared setup where both web and mobile consu
 The current status, source-of-truth order, scope boundaries, and quality gates are tracked in [docs/PROJECT_STATUS_AND_RULES.md](/d:/code/medhatile/docs/PROJECT_STATUS_AND_RULES.md).
 
 Latest verified gate:
-- `npm run build` passed on June 11, 2026.
+- `npm run build` passed on October 20, 2026.
 
 Still pending:
 - production backend deployment
