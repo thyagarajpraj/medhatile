@@ -6,6 +6,28 @@ Last updated: June 11, 2026
 
 This document is the quick reference for where MedhaTile currently stands and which rules agents should follow before changing the app.
 
+## Quick Resume
+
+Current state:
+- The app is locally buildable and the root build passed.
+- Web, backend, and mobile code paths are in a usable local state.
+- Production deployment is still pending, so live validation is not complete.
+- The database is MongoDB Atlas; the backend runtime should be hosted separately in a Node-compatible environment.
+- The next concrete backend hosting step is migrating from the current Render setup to Google Cloud Run.
+
+What is already done:
+- `npm run build` passes at repo root.
+- local web and backend health checks respond successfully.
+- the duplicate `User.email` index warning was cleaned up.
+- the app includes the web Next.js app, backend Express API, and mobile app shell.
+
+What remains next:
+- migrate the backend to Google Cloud Run
+- validate startup, health, and env configuration in the new runtime
+- update the deployed frontend API base URL to the migrated backend
+- run live API smoke checks for auth, game flow, leaderboard, and score save
+- complete production deployment validation and sign-off
+
 ## Current Application Status
 
 | Area | Status | Notes |
@@ -19,6 +41,7 @@ This document is the quick reference for where MedhaTile currently stands and wh
 | Local runtime smoke check | Passing | Web and backend started locally; `/health`, `/api/health`, and web root returned HTTP 200 on October 20, 2026. |
 | Backend startup warnings | Clean | Duplicate `User.email` index warning was removed; fresh backend stderr was empty on October 20, 2026. |
 | Theme system | Active | Five selectable web themes default to Neo-Brutalist and persist via browser storage without changing gameplay logic. |
+| Backend hosting migration | Planned | Migrate the Node/Express backend from Render to Google Cloud Run while keeping MongoDB Atlas as the database. |
 | Production backend deployment | Pending | Deployment target is Render or equivalent. |
 | Production web deployment | Pending | Deployment target is Vercel or equivalent. |
 | Production end-to-end validation | Pending | Requires deployed backend/frontend plus smoke testing. |
@@ -47,6 +70,12 @@ Not verified in the latest pass:
 - full authenticated API flow checks
 - real device mobile testing
 - production deployment validation
+- backend migration to Google Cloud Run
+- containerized backend deployment validation
+- health and startup checks in Cloud Run
+- confirmation of `PORT`, `MONGO_URI`, `JWT_SECRET`, and `FRONTEND_ORIGIN`
+- production API smoke tests against the Cloud Run backend
+- frontend production URL update to the migrated backend
 
 ## Source Of Truth Order
 
@@ -115,6 +144,7 @@ Keep the API contract stable unless the user explicitly approves a contract chan
 - Update docs when behavior, setup, deployment, or release status changes.
 - Keep the UI minimal, mobile responsive, and aligned with `docs/PRODUCT_SPEC.md`.
 - Prefer ASCII punctuation and plain text in source and docs unless the file already intentionally uses another encoding.
+- When moving backend hosting, migrate the runtime and environment config together so Cloud Run matches the current Render setup before production validation.
 
 ## Environment And Secret Rules
 
